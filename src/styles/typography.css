@@ -1,0 +1,62 @@
+/* https://utopia.fyi/type/calculator/?c=320,16,1.25,1000,18,1.414,3,1,&s=0.75%7C0.5%7C0.25,1.5%7C2%7C3%7C4%7C6,s-l&g=s,l,xl,12 */
+
+body {
+  font-weight: 250;
+  font-size: var(--typography-scale-body);
+  font-family: var(--typography-typeface-body);
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 350;
+}
+
+h1,
+h2 {
+  font-weight: 400;
+  font-family: var(--typography-typeface-heading);
+}
+
+h1 {
+  font-size: var(--typography-scale-display);
+}
+
+h2 {
+  font-size: var(--typography-scale-heading);
+}
+
+h3 {
+  font-size: var(--typography-scale-subtitle);
+}
+
+a {
+  color: var(--color-brand-highlight);
+  text-underline-offset: 0.25em;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+:is(h1, h2, h3, h4, h5, h6):has(.heading-anchor) {
+  display: flex;
+  gap: 0.25em;
+  align-items: baseline;
+}
+
+.heading-anchor {
+  opacity: 0;
+  text-decoration: none;
+  transition: opacity ease;
+  transition-duration: var(--motion-transition);
+
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+:is(h1, h2, h3, h4, h5, h6):hover .heading-anchor {
+  opacity: 1;
+}

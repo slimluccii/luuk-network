@@ -1,0 +1,31 @@
+each() {
+  list=$1
+  shift
+  [ -z "$list" ] && return 0
+  printf '%s' "$list" | tr '\n' '\0' | xargs -0 "$@"
+}
+
+IFS='
+'
+full=""
+partial=""
+for file in $(git diff --cached --name-only --diff-filter=ACMR); do
+  if git diff --quiet -- "$file"; then
+    full="$full$file
+"
+  else
+    partial="$partial$file
+"
+  fi
+done
+
+each "$full" npm run --silent format -- --no-error-on-unmatched-pattern
+each "$full" npm run --silent lint -- --fix --no-error-on-unmatched-pattern
+each "$full" git add --
+
+# Fixing a partially staged file would stage its unstaged changes too
+each "$partial" npm run --silent lint -- --no-error-on-unmatched-pattern
+each "$partial" npm run --silent format -- --check --no-error-on-unmatched-pattern || {
+  echo "Partially staged files need formatting: run npm run format, then restage"
+  exit 1
+}

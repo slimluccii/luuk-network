@@ -1,0 +1,6 @@
+query Fonts {
+  allUploads(filter: { mimeType: { matches: { pattern: "^font/" } } }, first: 100) {
+    filename
+    url
+  }
+}

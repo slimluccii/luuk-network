@@ -1,0 +1,96 @@
+---
+import type { Polymorphic } from "astro/types";
+import type { IconName } from "~/generated/icon-sprite";
+import Icon from "~/components/Icon.astro";
+
+type Props<Tag extends "button" | "a" = "button"> = Polymorphic<{
+  as: Tag;
+  variant?: "primary" | "secondary" | "transparent" | "link";
+  icon?: IconName;
+  iconOnly?: boolean;
+}>;
+const {
+  as: Tag = "button",
+  variant,
+  icon,
+  iconOnly,
+  class: className,
+  ...props
+} = Astro.props;
+---
+
+<Tag
+  class:list={[
+    "button",
+    { [`button--${variant}`]: variant, "button--icon-only": iconOnly },
+    className,
+  ]}
+  {...props}
+>
+  {icon && <Icon class="button__icon" name={icon} />}
+  <span class:list={["button__label", { "sr-only": iconOnly }]}>
+    <slot />
+  </span>
+</Tag>
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-gap-tight);
+    transition:
+      background var(--motion-feedback),
+      border var(--motion-feedback),
+      color var(--motion-feedback),
+      transform var(--motion-feedback);
+    cursor: pointer;
+    border: 1px solid var(--color-brand-primary);
+    background-color: var(--color-brand-primary);
+    padding: var(--spacing-size-xs) var(--spacing-size-m);
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.96);
+      transition-duration: 0.05s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+
+      &:hover,
+      &:active {
+        transform: none;
+      }
+    }
+  }
+
+  .button--icon-only {
+    padding: var(--spacing-size-xs);
+  }
+
+  .button--secondary {
+    border-color: var(--color-brand-secondary);
+    background-color: var(--color-brand-secondary);
+  }
+
+  .button--transparent {
+    border-color: transparent;
+    background-color: transparent;
+
+    &:hover {
+      border-color: var(--color-brand-neutral);
+      background-color: var(--color-brand-neutral);
+    }
+  }
+</style>

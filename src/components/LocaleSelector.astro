@@ -1,0 +1,74 @@
+---
+import { t } from "~/i18n";
+
+type Props = {
+  current: string;
+  translations: Array<{ locale: string; path: string }>;
+};
+
+const { current, translations } = Astro.props;
+const locales = [...translations].sort((a, b) =>
+  a.locale.localeCompare(b.locale)
+);
+
+// Endonym (the language's own name), so each option reads naturally to a
+// speaker of that language: "English", "Nederlands".
+const languageName = (locale: string) =>
+  new Intl.DisplayNames([locale], { type: "language" }).of(locale) ??
+  locale.toUpperCase();
+
+// Unique per instance: the selector renders twice (sidebar + drawer), so a
+// fixed id would duplicate and break the label's `for` association.
+const selectId = `locale-selector-${crypto.randomUUID()}`;
+---
+
+<locale-select class="locale-selector">
+  <label for={selectId} class="sr-only">{t("language")}</label>
+  <select id={selectId} autocomplete="off">
+    {
+      locales.map(({ locale, path }) => (
+        <option value={path} selected={locale === current} lang={locale}>
+          {languageName(locale)}
+        </option>
+      ))
+    }
+  </select>
+</locale-select>
+
+<script>
+  class LocaleSelect extends HTMLElement {
+    connectedCallback() {
+      const select = this.querySelector("select");
+      select?.addEventListener("change", () => {
+        const path = select.value;
+        if (path && path !== location.pathname) location.href = path;
+      });
+    }
+  }
+
+  if (!customElements.get("locale-select")) {
+    customElements.define("locale-select", LocaleSelect);
+  }
+</script>
+
+<style>
+  .locale-selector select {
+    display: block;
+    cursor: pointer;
+    margin: 0;
+    border: 1px solid transparent;
+    background-color: transparent;
+    padding: var(--spacing-size-xs);
+    inline-size: 100%;
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  }
+
+  .locale-selector:hover select {
+    border-color: var(--color-brand-neutral);
+    background-color: var(--color-brand-neutral);
+  }
+</style>

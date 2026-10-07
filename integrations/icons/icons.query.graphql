@@ -1,0 +1,9 @@
+query Icons {
+  allIcons(first: 100) {
+    file {
+      url
+      filename
+    }
+    name
+  }
+}

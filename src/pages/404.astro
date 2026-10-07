@@ -1,0 +1,51 @@
+---
+import type { ComponentProps } from "astro/types";
+import Base from "~/layouts/Base.astro";
+import PageHeader from "~/components/PageHeader.astro";
+import PageHeaderEyebrow from "~/components/PageHeaderEyebrow.astro";
+import { t } from "~/i18n";
+
+
+const seoMetaTags: NonNullable<ComponentProps<typeof Base>["seoMetaTags"]> = [
+  { tag: "title", content: t("page_not_found") },
+];
+---
+
+<Base title={t("page_not_found")} seoMetaTags={seoMetaTags}>
+  <article class="error-state">
+    <PageHeader>
+      <PageHeaderEyebrow>404</PageHeaderEyebrow>
+      <h1 class="error-state__title">{t("page_not_found")}</h1>
+    </PageHeader>
+    <div class="error-state__body">
+      <p>{t("page_not_found_body")}</p>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .error-state {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-m);
+    padding-block-end: var(--spacing-size-xxl);
+  }
+
+  .error-state__title {
+    margin: 0;
+    font-weight: 400;
+    font-size: var(--typography-scale-heading);
+    font-family: var(--typography-typeface-body);
+  }
+
+  .error-state__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-m);
+    padding-inline: var(--spacing-size-l);
+  }
+
+  .error-state__body p {
+    margin: 0;
+  }
+</style>

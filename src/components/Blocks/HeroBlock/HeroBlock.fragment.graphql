@@ -1,0 +1,21 @@
+fragment HeroBlock on HeroBlockRecord {
+  title
+  description
+  action {
+    ... on ButtonRecord {
+      label
+      url
+      icon
+    }
+  }
+  coverImage {
+    responsiveImage(imgixParams: { ar: "16:9", fit: crop, w: 1600 }) {
+      ...ResponsiveImage
+    }
+  }
+  subjectImage {
+    responsiveImage(imgixParams: { w: 600, h: 600, fit: crop }) {
+      ...ResponsiveImage
+    }
+  }
+}

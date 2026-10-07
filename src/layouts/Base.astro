@@ -1,0 +1,267 @@
+---
+import type { ComponentProps } from "astro/types";
+import { i18n } from "astro:config/client";
+import { Font } from "astro:assets";
+import { Seo } from "@datocms/astro";
+import Border from "~/components/Border.astro";
+import Button from "~/components/Button.astro";
+import EnableJavascript from "~/components/EnableJavascript.astro";
+import Footer from "~/components/Footer.astro";
+import IconSprite from "~/components/IconSprite.astro";
+import LocaleSelector from "~/components/LocaleSelector.astro";
+import Logo from "~/components/Logo.astro";
+import Menu from "~/components/Menu.astro";
+import SetColorScheme from "~/components/SetColorScheme.astro";
+import ViewportState from "~/components/ViewportState.astro";
+import { getMenuItems } from "~/datocms/menu";
+import { t, toLocale } from "~/i18n";
+import { imgix_host } from "~/generated/site.json";
+
+import "~/generated/tokens.css";
+import "~/styles/a11y.css";
+import "~/styles/reset.css";
+import "~/styles/typography.css";
+
+type Props = {
+  locale?: string;
+  title?: string;
+  seoMetaTags?: ComponentProps<typeof Seo>["data"];
+  translations?: Array<{ locale: string; path: string }>;
+};
+
+const {
+  locale = i18n?.defaultLocale ?? "en",
+  title,
+  seoMetaTags = [],
+  translations = [],
+} = Astro.props;
+const xDefault = translations.find((t) => t.locale === i18n?.defaultLocale);
+const { origin, pathname } = Astro.url;
+
+const canonical = `${origin}${pathname}`;
+
+const menuItems = await getMenuItems(toLocale(locale));
+---
+
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href={`https://${imgix_host}`} crossorigin />
+    <Seo data={seoMetaTags} />
+
+    <EnableJavascript />
+    <ViewportState />
+    <SetColorScheme />
+
+    <Font cssVariable="--font-source-sans" preload={[{ style: "normal" }]} />
+    <Font cssVariable="--font-dash-casual" preload />
+    <link rel="canonical" href={canonical} />
+    {
+      translations.map(({ locale, path }) => (
+        <link
+          rel="alternate"
+          hreflang={locale}
+          href={new URL(path, Astro.site)}
+        />
+      ))
+    }
+    {
+      xDefault && (
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(xDefault.path, Astro.site)}
+        />
+      )
+    }
+    <slot name="head" />
+  </head>
+  <body>
+    <Button as="a" class="kb-only skip-link" href="#main">
+      {t("skip_to_main_content")}
+    </Button>
+    <Button as="a" class="kb-only skip-link" href="#navigation">
+      {t("skip_to_navigation")}
+    </Button>
+    {/* The single navigation landmark: the viewport-specific menus inside
+        (<MenuSidebar>/<MenuDrawer>) are plain wrappers, so there's one nav,
+        not nested duplicates. Also the skip-link target via id + tabindex. */}
+    <nav id="navigation" class="navigation" aria-label={t("main_navigation")} tabindex="-1">
+      <Menu
+        items={menuItems}
+        currentPageTitle={title}
+        locale={locale}
+        translations={translations}
+      />
+      {translations.length > 0 && (
+        <div class="navigation__locale">
+          <LocaleSelector current={locale} translations={translations} />
+        </div>
+      )}
+    </nav>
+    <div class="content">
+      <Border class="content__border">
+        <Border class="header">
+          <header>
+            <a href="/">
+              <Logo />
+              <span class="sr-only">Luuk Brauckmann</span>
+            </a>
+          </header>
+        </Border>
+
+        <main id="main">
+          <slot />
+        </main>
+
+        <Footer items={menuItems} />
+      </Border>
+    </div>
+
+    <IconSprite />
+  </body>
+</html>
+
+<style>
+  html {
+    container-type: inline-size;
+    background-color: var(--color-surface-canvas);
+    scrollbar-gutter: stable;
+    color-scheme: dark;
+
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  .skip-link:focus {
+    position: fixed;
+    inset-block-start: var(--spacing-size-xs);
+    inset-inline-start: 50%;
+  }
+
+  body {
+    min-block-size: 100dvh;
+    overflow-x: clip;
+
+    @container (width > 800px) {
+      display: grid;
+      grid-template-columns: minmax(0, 200px) min(600px, 100%);
+      grid-template-areas: "left center";
+      justify-content: center;
+    }
+
+    @container (width > 1000px) {
+      grid-template-columns: minmax(0, 200px) min(600px, 100%) minmax(0, 200px);
+      grid-template-areas: "left center right";
+    }
+  }
+
+  main {
+    grid-area: stack;
+    overflow: hidden;
+  }
+
+  .content {
+    grid-area: center;
+
+    @container (width > 800px) {
+      padding: var(--spacing-size-xs);
+    }
+  }
+
+  .content__border {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "header"
+      "stack"
+      "footer";
+    block-size: 100%;
+  }
+
+  /* Mobile-first: the nav region has no in-flow content on narrow (sidebar
+     and standalone selector hidden, drawer trigger fixed), so its default
+     block box collapses to zero height — no gap, while staying a reliable
+     navigation landmark (unlike display:contents). The wide rule below gives
+     it the sticky sidebar layout. */
+
+  /* The standalone selector is a wide-viewport affordance only; on narrow it
+     lives inside the menu drawer (owned by <MenuDrawer>). */
+  .navigation__locale {
+    display: none;
+  }
+
+  :global(html[data-viewport="wide"]) .navigation__locale {
+    display: block;
+  }
+
+  /* On wide the whole left column sticks for the full viewport height, so the
+     locale selector can pin to the bottom and stay in view while scrolling.
+     (Was on <MenuSidebar>, but the selector lives outside it.) */
+  :global(html[data-viewport="wide"]) .navigation {
+    display: flex;
+    position: sticky;
+    flex-direction: column;
+    grid-area: left;
+    inset-block-start: 0;
+    block-size: 100dvh;
+  }
+
+  /* In its own grid row so it reserves space (content sits below it, no
+     overlap at rest), but sticky so it pins to the top on scroll. The
+     scroll-state container query reveals the divider + gradient once stuck. */
+  .header {
+    display: block;
+    position: sticky;
+    container-type: scroll-state;
+    grid-area: header;
+    align-self: start;
+    z-index: 999;
+    inset-block-start: -1px;
+    border-block-end-color: transparent;
+
+    &::after {
+      position: absolute;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: opacity ease;
+      transition-duration: var(--motion-transition);
+      inset-block-end: 0px;
+      inset-inline: 0px;
+      background: linear-gradient(
+        to bottom,
+        var(--color-surface-base),
+        transparent
+      );
+      height: var(--spacing-size-l);
+      pointer-events: none;
+      content: "";
+    }
+  }
+
+  .header header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition:
+      background-color ease,
+      border-block-end-color ease;
+    transition-duration: var(--motion-transition);
+    border-block-end: 1px solid transparent;
+    padding: var(--spacing-size-xxs);
+  }
+
+  @container scroll-state(stuck: top) {
+    .header::after {
+      opacity: 1;
+    }
+
+    .header header {
+      background-color: var(--color-surface-canvas);
+      border-block-end-color: var(--color-surface-base);
+    }
+  }
+</style>

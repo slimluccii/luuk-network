@@ -1,0 +1,4 @@
+{
+  "schema": ".generated/schema.graphql",
+  "documents": ["src/**/*.graphql", "integrations/**/*.graphql"]
+}

@@ -1,0 +1,70 @@
+<div class="carousel-wrapper">
+  <ul class="carousel">
+    <slot />
+  </ul>
+</div>
+
+<style>
+  .carousel-wrapper {
+    position: relative;
+    margin-inline: calc(var(--spacing-size-l) * -1);
+  }
+
+  .carousel {
+    display: flex;
+    gap: var(--spacing-size-m);
+    container-type: scroll-state;
+    margin: 0;
+    padding-inline: var(--spacing-size-l);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    list-style-type: "";
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &::before,
+    &::after {
+      position: absolute;
+      inline-size: var(--spacing-size-l);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity ease var(--motion-transition);
+      inset-block: 0;
+      pointer-events: none;
+      content: "";
+    }
+
+    &::before {
+      inset-inline-start: 0;
+      background: linear-gradient(
+        to right,
+        var(--color-surface-base),
+        transparent
+      );
+    }
+
+    &::after {
+      inset-inline-end: 0;
+      background: linear-gradient(
+        to left,
+        var(--color-surface-base),
+        transparent
+      );
+    }
+
+    @container scroll-state(scrollable: inline-start) {
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    @container scroll-state(scrollable: inline-end) {
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,79 @@
+query Loader($locale: SiteLocale, $fallbackLocales: [SiteLocale!]) {
+  _site {
+    faviconMetaTags {
+      tag
+      attributes
+      content
+    }
+  }
+  allRoutes(locale: $locale, first: 100) {
+    collection
+    indexPage {
+      id
+    }
+  }
+  allPages(locale: $locale, fallbackLocales: $fallbackLocales, first: 100) {
+    _modelApiKey
+    id
+    slug
+    title
+    _seoMetaTags {
+      tag
+      attributes
+      content
+    }
+    content {
+      __typename
+      ...HeroBlock
+      ...CollectionBlock
+      ...SectionBlock
+      ...TitleBlock
+      ...LinkBlock
+      ...FeaturedBlock
+      ...StoryBlock
+    }
+  }
+  allPosts(locale: $locale, fallbackLocales: $fallbackLocales, first: 100) {
+    _modelApiKey
+    id
+    slug
+    title
+    _seoMetaTags {
+      tag
+      attributes
+      content
+    }
+  }
+  allProjects(locale: $locale, fallbackLocales: $fallbackLocales, first: 100) {
+    _modelApiKey
+    id
+    slug
+    _seoMetaTags {
+      tag
+      attributes
+      content
+    }
+    title
+    description
+    href
+    startDate
+    endDate
+    clientName
+    cover {
+      responsiveImage(imgixParams: { ar: "16:9", fit: crop, w: 1600 }) {
+        ...ResponsiveImage
+      }
+    }
+    clientLogo {
+      responsiveImage(imgixParams: { w: 600, h: 600, fit: crop }) {
+        ...ResponsiveImage
+      }
+    }
+    technologies {
+      name
+    }
+    content {
+      value
+    }
+  }
+}

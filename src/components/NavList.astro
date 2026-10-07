@@ -1,0 +1,134 @@
+---
+import Icon from "~/components/Icon.astro";
+import { getCurrentState, ariaCurrent } from "~/data/nav";
+import type { MenuItem } from "~/datocms/menu";
+
+interface Props {
+  items: MenuItem[];
+  currentPageTitle?: string;
+  showSubList?: boolean;
+  markActive?: boolean;
+}
+
+const {
+  items,
+  currentPageTitle,
+  showSubList = false,
+  markActive = true,
+} = Astro.props;
+
+const { pathname } = Astro.url;
+---
+
+<ul
+  class:list={["nav-list", { "nav-list--mark-active": markActive }]}
+  role="list"
+>
+  {
+    items.map(({ href, label }) => {
+      const state = getCurrentState(pathname, href);
+      return (
+        <li>
+          <a
+            class="nav-list__link"
+            href={href}
+            aria-current={ariaCurrent(state)}
+          >
+            {label}
+          </a>
+          {showSubList && state === "section" && currentPageTitle && (
+            <ul class="nav-list__sublist" role="list">
+              <li>
+                <a
+                  class="nav-list-sublink"
+                  href={pathname}
+                  aria-current="page"
+                >
+                  <Icon class="nav-list-sublink__icon" name="corner-down-right" />
+                  <span>{currentPageTitle}</span>
+                </a>
+              </li>
+            </ul>
+          )}
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    gap: var(--spacing-size-s);
+    padding-inline: var(--spacing-size-xs);
+  }
+
+  .nav-list__link {
+    display: block;
+    opacity: var(--opacity-muted);
+    transition: var(--motion-feedback) ease;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+
+    &:hover {
+      opacity: 1;
+      text-decoration-color: currentColor;
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+  }
+
+  .nav-list--mark-active .nav-list__link {
+    &[aria-current="page"],
+    &[aria-current="true"] {
+      opacity: 1;
+      font-weight: 500;
+    }
+  }
+
+  .nav-list__sublist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-list-sublink {
+    display: flex;
+    gap: var(--spacing-size-xxs);
+    opacity: var(--opacity-muted);
+    transition: var(--motion-feedback) ease;
+    color: inherit;
+    font-size: var(--typography-scale-caption);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+
+    &:hover {
+      opacity: 1;
+      text-decoration-color: currentColor;
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    &[aria-current="page"] {
+      opacity: 1;
+    }
+
+    & .nav-list-sublink__icon {
+        margin-block-start: 2px;
+    }
+  }
+</style>

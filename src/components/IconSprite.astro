@@ -1,0 +1,15 @@
+---
+import sprite from "~/generated/icon-sprite.svg?raw";
+---
+
+<div aria-hidden="true" class="icon-sprite" set:html={sprite} />
+
+<style>
+  /* Not display: none; gradients inside a non-rendered sprite do not paint via <use> */
+  .icon-sprite {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+  }
+</style>

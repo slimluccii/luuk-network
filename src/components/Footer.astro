@@ -1,0 +1,125 @@
+---
+import Border from "~/components/Border.astro";
+import Icon from "~/components/Icon.astro";
+import Logo from "~/components/Logo.astro";
+import NavList from "~/components/NavList.astro";
+import type { MenuItem } from "~/datocms/menu";
+import { t } from "~/i18n";
+
+interface Props {
+  items: MenuItem[];
+}
+
+const { items } = Astro.props;
+
+const socialLinks = [
+  { href: "https://github.com/slimluccii", icon: "github", title: "GitHub" },
+  { href: "https://codepen.io/slimluccii", icon: "codepen", title: "CodePen" },
+  {
+    href: "https://bsky.app/profile/luuk.network",
+    icon: "bluesky",
+    title: "Bluesky",
+  },
+  {
+    href: "https://www.linkedin.com/in/luukbrauckmann/",
+    icon: "linkedin",
+    title: "LinkedIn",
+  },
+] as const;
+---
+
+<Border class="footer__border" color="secondary">
+  <footer class="footer">
+    <h2 class="sr-only">{t("site_footer")}</h2>
+
+    <div class="footer__intro">
+      <div class="footer__logo">
+        <Logo size="large" />
+      </div>
+
+      <p class="footer__about">{t("footer_about")}</p>
+
+      <nav
+        id="footer-nav"
+        class="footer-nav"
+        aria-labelledby="footer-nav-heading"
+        data-footer-nav
+      >
+        <h3 id="footer-nav-heading" class="sr-only">{t("pages")}</h3>
+        <NavList items={items} markActive={false} />
+      </nav>
+    </div>
+
+    <div class="footer__meta">
+      <p class="copyright">
+        &copy; {new Date().getFullYear()} Luuk Brauckmann. <a
+          href="https://creativecommons.org/licenses/by/4.0/"
+          target="_blank"
+          rel="license noopener noreferrer">CC BY 4.0</a
+        >
+      </p>
+
+      <ul class="social-links" role="list">
+        {
+          socialLinks.map(({ href, icon, title }) => (
+            <li>
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                <Icon name={icon} title={title} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </footer>
+</Border>
+
+<style>
+  .footer__border {
+    grid-area: footer;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-xl);
+    background-color: var(--color-surface-raised);
+    padding: var(--spacing-size-l) var(--spacing-size-l) var(--spacing-size-s);
+  }
+
+  .footer__intro {
+    display: grid;
+    gap: var(--spacing-size-m) var(--spacing-size-l);
+
+    @media (min-width: 600px) {
+      grid-template-columns: 1fr 150px;
+      align-items: start;
+    }
+  }
+
+  .footer__logo {
+    @media (min-width: 600px) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .footer__about {
+    margin: 0;
+  }
+
+  .footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    /*gap: var(--spacing-size-s);*/
+    font-size: var(--typography-scale-caption);
+  }
+
+  .social-links {
+    display: flex;
+    gap: var(--spacing-size-xs);
+    padding: 0px;
+    list-style: none;
+  }
+</style>

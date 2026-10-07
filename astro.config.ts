@@ -1,0 +1,68 @@
+import { defineConfig, envField } from "astro/config";
+import sitemap from "@astrojs/sitemap";
+import { generate } from "@graphql-codegen/cli";
+import codegenConfig from "./codegen.config";
+import codegen from "./integrations/codegen";
+import site from "./integrations/site";
+import designTokens from "./integrations/design-tokens";
+
+await generate({ ...codegenConfig, silent: true });
+
+// Imported after codegen because they import the generated documents.
+const { default: icons } = await import("./integrations/icons");
+const { default: translations } = await import("./integrations/translations");
+const { datocms: datocmsFonts } = await import("./integrations/fonts");
+
+const latin = ["U+0020-007F", "U+00A0-00FF"] as const;
+
+// https://astro.build/config
+export default defineConfig({
+  site: "https://luuk.network",
+  integrations: [
+    codegen(codegenConfig),
+    site(),
+    translations(),
+    icons(),
+    designTokens(),
+    sitemap(),
+  ],
+  devToolbar: {
+    enabled: false,
+  },
+  prefetch: true,
+  fonts: [
+    {
+      provider: datocmsFonts(),
+      name: "Source Sans",
+      cssVariable: "--font-source-sans",
+      fallbacks: ["system-ui", "sans-serif"],
+      featureSettings: '"kern" 1',
+      unicodeRange: [...latin],
+      options: {
+        variants: [
+          { file: "source-sans.woff2", weight: "200 900", style: "normal" },
+          { file: "source-sans-italic.woff2", weight: "200 900", style: "italic" },
+        ],
+      },
+    },
+    {
+      provider: datocmsFonts(),
+      name: "Dash Casual",
+      cssVariable: "--font-dash-casual",
+      fallbacks: ["system-ui", "serif"],
+      featureSettings: '"kern" 1, "liga" 1, "calt" 1, "locl" 1, "mark" 1, "mkmk" 1, "case" 1',
+      unicodeRange: [...latin],
+      options: {
+        variants: [{ file: "dash-casual.woff2", weight: "1 700", style: "normal" }],
+      },
+    },
+  ],
+  env: {
+    schema: {
+      DATOCMS_TOKEN: envField.string({
+        context: "server",
+        access: "secret",
+      }),
+    },
+  },
+});
