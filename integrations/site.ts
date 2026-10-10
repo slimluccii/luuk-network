@@ -17,11 +17,7 @@ export default function site(): AstroIntegration {
           i18n: {
             defaultLocale: site.locales[0],
             locales: site.locales,
-            routing: {
-              prefixDefaultLocale: true,
-              redirectToDefaultLocale: true,
-              fallbackType: "redirect",
-            },
+            routing: "manual",
           },
         });
 

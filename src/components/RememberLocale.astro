@@ -1,0 +1,8 @@
+---
+// Pages are prerendered, so the middleware can't set this cookie; it reads it on `/`.
+import { LOCALE_COOKIE } from "~/i18n";
+---
+
+<script is:inline define:vars={{ cookieName: LOCALE_COOKIE }}>
+  document.cookie = `${cookieName}=${document.documentElement.lang}; path=/; max-age=31536000; samesite=lax`;
+</script>
