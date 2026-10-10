@@ -1,5 +1,6 @@
 import { defineConfig, envField } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import deploybase from "@deploybase/adapter-astro";
 import { generate } from "@graphql-codegen/cli";
 import codegenConfig from "./codegen.config";
 import codegen from "./integrations/codegen";
@@ -18,6 +19,7 @@ const latin = ["U+0020-007F", "U+00A0-00FF"] as const;
 // https://astro.build/config
 export default defineConfig({
   site: "https://luuk.network",
+  adapter: deploybase(),
   integrations: [
     codegen(codegenConfig),
     site(),
