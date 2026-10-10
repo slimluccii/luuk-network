@@ -32,6 +32,23 @@ export default defineConfig({
     enabled: false,
   },
   prefetch: true,
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data: https://www.datocms-assets.com",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "object-src 'none'",
+        "require-trusted-types-for 'script'",
+        "trusted-types 'none'",
+      ],
+      scriptDirective: { resources: ["'self'", "'wasm-unsafe-eval'"] },
+      styleDirective: { resources: ["'self'", "'unsafe-inline'"] },
+    },
+  },
   fonts: [
     {
       provider: datocmsFonts(),
