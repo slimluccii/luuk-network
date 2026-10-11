@@ -1,0 +1,13 @@
+---
+import { getOnDemandEntry } from "~/datocms/entries";
+import Layout from "~/layouts/Layout.astro";
+
+export const prerender = false;
+
+const entry = await getOnDemandEntry(Astro.url);
+if (!entry) {
+  return new Response(null, { status: 404 });
+}
+---
+
+<Layout entry={entry} />

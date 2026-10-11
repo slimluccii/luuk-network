@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PageLayout from "~/layouts/PageLayout.astro";
+import PostLayout from "~/layouts/PostLayout.astro";
+import ProjectLayout from "~/layouts/ProjectLayout.astro";
+
+type Props = {
+  entry: CollectionEntry<"pages">;
+};
+
+const layouts = {
+  page: PageLayout,
+  post: PostLayout,
+  project: ProjectLayout,
+} as const;
+
+const { entry } = Astro.props;
+const modelApiKey = entry.data._modelApiKey;
+const ModelLayout = layouts[modelApiKey as keyof typeof layouts];
+if (!ModelLayout) {
+  throw new Error(`Geen layout voor "${modelApiKey}"`);
+}
+---
+
+<ModelLayout entry={entry} />

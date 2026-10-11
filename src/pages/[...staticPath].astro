@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getPrerenderedEntries } from "~/datocms/entries";
+import Layout from "~/layouts/Layout.astro";
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+  const entries = await getPrerenderedEntries();
+  return entries.map((entry) => ({
+    // `path` is the full locale-prefixed URL built by the loader; Astro rest
+    // params can't carry a leading slash, so strip it at this boundary.
+    params: { staticPath: entry.data.path.replace(/^\//, "") },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+---
+
+<Layout entry={entry} />

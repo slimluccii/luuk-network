@@ -4,6 +4,7 @@ import { z } from "astro/zod";
 import { executeQuery } from "./execute-query";
 import { buildIndexMap } from "./build-index-map";
 import { resolvePath, type RoutablePage } from "./resolve-path";
+import { rendersOnDemand } from "./renders-on-demand";
 
 type EntryData = (
   | LoaderQuery["allPages"][number]
@@ -12,6 +13,7 @@ type EntryData = (
 ) & {
   locale: string;
   path: string;
+  onDemand?: boolean;
   translations: Array<{ locale: string; path: string }>;
 };
 
@@ -68,6 +70,7 @@ export function loader() {
                 ...page,
                 locale,
                 path: toUrl(prefixFor(page)),
+                onDemand: rendersOnDemand(page.content),
                 _seoMetaTags: [...favicon, ...page._seoMetaTags],
               },
             });
