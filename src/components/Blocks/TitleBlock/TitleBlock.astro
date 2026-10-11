@@ -11,3 +11,10 @@ const Tag = `h${block.level ?? 2}` as `h${1 | 2 | 3 | 4 | 5 | 6}`;
 ---
 
 <Tag class="title-block">{block.title}</Tag>
+
+<style>
+  .title-block {
+    margin: 0;
+    padding: var(--spacing-size-xl) var(--spacing-size-l) 0;
+  }
+</style>

@@ -23,8 +23,8 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
   {
     entries.map(
       ({ href, title, description, meta, linkLabel = "Read more" }) => (
-        <li class="entry">
-          <LinkArea>
+        <li>
+          <LinkArea class="entry">
             <Heading class="entry__title">{title}</Heading>
             {description && <p class="entry__description">{description}</p>}
             {meta && <p class="entry__meta">{meta}</p>}
@@ -43,7 +43,7 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
   .entry-list {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-size-l);
+    gap: var(--spacing-size-xl);
     margin: 0;
     padding: 0;
     list-style: none;
