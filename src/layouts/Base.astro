@@ -115,6 +115,14 @@ const menuItems = await getMenuItems(toLocale(locale));
           </header>
         </Border>
 
+        {
+          Astro.slots.has("back") && (
+            <div class="back">
+              <slot name="back" />
+            </div>
+          )
+        }
+
         <main id="main">
           <slot />
         </main>
@@ -195,12 +203,21 @@ const menuItems = await getMenuItems(toLocale(locale));
     --header-block-size: calc(var(--typography-scale-subtitle) + 2 * var(--spacing-size-xs));
 
     display: grid;
+    position: relative;
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
       "header"
       "stack"
       "footer";
     block-size: 100%;
+  }
+
+  /* Tucked under the header, over the hero banner when there is one. */
+  .back {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: calc(var(--header-block-size) + var(--spacing-size-xs));
+    inset-inline-start: var(--spacing-size-l);
   }
 
   /* Mobile-first: the nav region has no in-flow content on narrow (sidebar

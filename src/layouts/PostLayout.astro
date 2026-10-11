@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import type { LoaderQuery } from "~/generated/datocms";
 import type { CdaStructuredTextValue } from "@datocms/astro";
 import Base from "~/layouts/Base.astro";
+import BackLink from "~/components/BackLink.astro";
 import HeroMeta from "~/components/HeroMeta.astro";
 import HeroTitle from "~/components/HeroTitle.astro";
 import TagList from "~/components/TagList.astro";
@@ -22,7 +23,7 @@ type PostData = LoaderQuery["allPosts"][number] & {
 const { entry } = Astro.props;
 const data = entry.data as unknown as PostData;
 
-const eyebrow = [data.indexPage.title, data.category?.name].filter(Boolean).join(" • ");
+const eyebrow = [data.indexPage.title, data.category?.name].filter(Boolean);
 const tags = data.tags.map((tag) => tag.name).filter((name): name is string => name != null);
 const dateFormat: Intl.DateTimeFormatOptions = {
   weekday: "short",
@@ -38,9 +39,28 @@ const dateFormat: Intl.DateTimeFormatOptions = {
   seoMetaTags={data._seoMetaTags}
   translations={data.translations}
 >
+  <BackLink slot="back" href={data.indexPage.path} overview={data.indexPage.title ?? ""} />
   <article class="post">
     <header class="post__header">
-      {eyebrow && <HeroMeta>{eyebrow}</HeroMeta>}
+      {
+        eyebrow.length > 0 && (
+          <HeroMeta>
+            {eyebrow.map((part, index) => (
+              <>
+                {index > 0 && (
+                  <>
+                    {" "}
+                    <span class="post__separator" aria-hidden="true">
+                      •
+                    </span>{" "}
+                  </>
+                )}
+                {part}
+              </>
+            ))}
+          </HeroMeta>
+        )
+      }
       <HeroTitle>{data.title}</HeroTitle>
       <div class="post__meta">
         {
@@ -71,5 +91,9 @@ const dateFormat: Intl.DateTimeFormatOptions = {
     gap: var(--spacing-size-s);
     margin-block-start: var(--spacing-size-xs);
     font-size: var(--typography-scale-caption);
+  }
+
+  .post__separator {
+    margin-inline: 0.25em;
   }
 </style>

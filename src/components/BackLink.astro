@@ -1,0 +1,49 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Icon from "~/components/Icon.astro";
+import { t } from "~/i18n";
+
+type Props = HTMLAttributes<"a"> & {
+  overview: string;
+};
+
+const { overview, class: className, ...attrs } = Astro.props;
+---
+
+<a {...attrs} class:list={["back-link", className]}>
+  <Icon class="back-link__icon" name="arrow-left" />
+  <span>{t("back_to", { title: overview })}</span>
+</a>
+
+<style>
+  .back-link {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--spacing-size-xxs);
+    opacity: var(--opacity-muted);
+    transition:
+      opacity var(--motion-feedback) ease,
+      text-decoration-color var(--motion-feedback) ease;
+    color: inherit;
+    font-size: var(--typography-scale-caption);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+      text-decoration-color: currentColor;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .back-link__icon {
+      transition: translate var(--motion-feedback) ease;
+    }
+
+    .back-link:hover .back-link__icon {
+      translate: -0.2em 0;
+    }
+  }
+</style>
