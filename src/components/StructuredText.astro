@@ -4,11 +4,26 @@ import { StructuredText as DatocmsStructuredText } from "@datocms/astro";
 import Prose from "~/components/Prose.astro";
 
 type Props = ComponentProps<typeof DatocmsStructuredText>;
+
+const { data } = Astro.props;
+const value: unknown = data && "value" in data ? data.value : data;
+const root: unknown =
+  value && typeof value === "object" && "document" in value ? value.document : value;
+const isEmpty =
+  !root ||
+  (typeof root === "object" &&
+    "children" in root &&
+    Array.isArray(root.children) &&
+    root.children.length === 0);
 ---
 
-<div class="structured-text">
-  <DatocmsStructuredText {...Astro.props} />
-</div>
+{
+  !isEmpty && (
+    <div class="structured-text">
+      <DatocmsStructuredText {...Astro.props} />
+    </div>
+  )
+}
 
 <style>
   .structured-text > :global(*) {
