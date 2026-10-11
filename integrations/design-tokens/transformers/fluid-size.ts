@@ -8,7 +8,8 @@ import type { Transform } from "style-dictionary/types";
  *
  * The size at a step is `base · ratio^step`, computed at each endpoint of the
  * referenced scale, then fluid-interpolated across the width range into a
- * `clamp()`. Each token names its own scale, so a new role is one line and the
+ * `clamp()`. Widths are container widths: the preferred value uses `cqi`, so it
+ * follows the nearest size container rather than the viewport. Each token names its own scale, so a new role is one line and the
  * whole hierarchy retunes from the `Fluid.*` endpoints.
  */
 const ROOT_FONT_SIZE = 16;
@@ -30,16 +31,16 @@ const fluidSize: Transform = {
 
     const minRem = px(min.size) * min.scale ** step;
     const maxRem = px(max.size) * max.scale ** step;
-    const minVp = px(min.width) / ROOT_FONT_SIZE;
-    const maxVp = px(max.width) / ROOT_FONT_SIZE;
+    const minWidth = px(min.width) / ROOT_FONT_SIZE;
+    const maxWidth = px(max.width) / ROOT_FONT_SIZE;
 
-    const slope = (maxRem - minRem) / (maxVp - minVp);
-    const intercept = minRem - slope * minVp;
+    const slope = (maxRem - minRem) / (maxWidth - minWidth);
+    const intercept = minRem - slope * minWidth;
 
-    // Explicit sign: descending steps give a negative vw coefficient, and
-    // Safari rejects `A + -Bvw` (falls back to inherit), so emit `A - Bvw`.
-    const vw = round(slope * 100);
-    const preferred = `${round(intercept)}rem ${vw < 0 ? "-" : "+"} ${Math.abs(vw)}vw`;
+    // Explicit sign: descending steps give a negative coefficient, and
+    // Safari rejects `A + -Bcqi` (falls back to inherit), so emit `A - Bcqi`.
+    const cqi = round(slope * 100);
+    const preferred = `${round(intercept)}rem ${cqi < 0 ? "-" : "+"} ${Math.abs(cqi)}cqi`;
     const lo = round(Math.min(minRem, maxRem));
     const hi = round(Math.max(minRem, maxRem));
 
