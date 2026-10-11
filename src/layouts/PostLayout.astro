@@ -3,8 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import type { LoaderQuery } from "~/generated/datocms";
 import type { CdaStructuredTextValue } from "@datocms/astro";
 import Base from "~/layouts/Base.astro";
-import PageHeader from "~/components/PageHeader.astro";
-import PageHeaderEyebrow from "~/components/PageHeaderEyebrow.astro";
+import HeroMeta from "~/components/HeroMeta.astro";
 import HeroTitle from "~/components/HeroTitle.astro";
 import TagList from "~/components/TagList.astro";
 import StructuredText from "~/components/StructuredText.astro";
@@ -40,8 +39,8 @@ const dateFormat: Intl.DateTimeFormatOptions = {
   translations={data.translations}
 >
   <article class="post">
-    <PageHeader class="post__header">
-      {eyebrow && <PageHeaderEyebrow>{eyebrow}</PageHeaderEyebrow>}
+    <header class="post__header">
+      {eyebrow && <HeroMeta>{eyebrow}</HeroMeta>}
       <HeroTitle>{data.title}</HeroTitle>
       <div class="post__meta">
         {
@@ -51,7 +50,7 @@ const dateFormat: Intl.DateTimeFormatOptions = {
         }
         {tags.length > 0 && <TagList tags={tags} />}
       </div>
-    </PageHeader>
+    </header>
 
     {data.content && <StructuredText data={data.content as CdaStructuredTextValue} />}
   </article>
@@ -59,7 +58,9 @@ const dateFormat: Intl.DateTimeFormatOptions = {
 
 <style>
   .post__header {
-    gap: var(--spacing-size-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-gap-tight);
     padding: var(--spacing-size-xxl) var(--spacing-size-l) 0;
   }
 
@@ -68,5 +69,7 @@ const dateFormat: Intl.DateTimeFormatOptions = {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-size-s);
+    margin-block-start: var(--spacing-size-xs);
+    font-size: var(--typography-scale-caption);
   }
 </style>
