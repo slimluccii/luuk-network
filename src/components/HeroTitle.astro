@@ -11,3 +11,12 @@ const { as: Tag = "h1", class: className, ...attrs } = Astro.props;
 <Tag class:list={["hero__title", className]} {...attrs}>
   <slot />
 </Tag>
+
+<style>
+  .hero__title {
+    margin: 0;
+    font-weight: 350;
+    font-size: var(--typography-scale-display);
+    font-family: var(--typography-typeface-heading);
+  }
+</style>

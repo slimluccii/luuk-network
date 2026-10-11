@@ -9,3 +9,11 @@ const { class: className, ...attrs } = Astro.props;
 <p class:list={["hero__meta", className]} {...attrs}>
   <slot />
 </p>
+
+<style>
+  .hero__meta {
+    opacity: var(--opacity-muted);
+    margin: 0;
+    font-size: var(--typography-scale-caption);
+  }
+</style>
