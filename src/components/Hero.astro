@@ -21,8 +21,11 @@ import Border from "~/components/Border.astro";
 <style>
   .hero__visual {
     position: relative;
-    aspect-ratio: 16 / 9;
     overflow: hidden;
+
+    &:has(picture) {
+      aspect-ratio: 16 / 9;
+    }
 
     &:has(picture)::after {
       position: absolute;
@@ -30,6 +33,17 @@ import Border from "~/components/Border.astro";
       background-color: rgba(0, 0, 0, 0.25);
       pointer-events: none;
       content: "";
+    }
+
+    &:not(:has(picture)) + .hero__content {
+      .hero-content__top {
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      .hero__subject {
+        position: static;
+      }
     }
   }
 
@@ -50,6 +64,10 @@ import Border from "~/components/Border.astro";
     display: flex;
     position: relative;
     justify-content: flex-end;
+
+    &:not(:has(*)) {
+      display: none;
+    }
   }
 
   .hero-content__bottom {
