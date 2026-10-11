@@ -1,5 +1,4 @@
 ---
-import Link from "~/components/Link.astro";
 import LinkArea from "~/components/LinkArea.astro";
 
 type Entry = {
@@ -7,7 +6,6 @@ type Entry = {
   title: string;
   description?: string;
   meta?: string;
-  linkLabel?: string;
 };
 
 interface Props {
@@ -21,21 +19,21 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
 
 <ul class="entry-list">
   {
-    entries.map(
-      ({ href, title, description, meta, linkLabel = "Read more" }) => (
-        <li>
-          <LinkArea class="entry">
-            <Heading class="entry__title">{title}</Heading>
-            {description && <p class="entry__description">{description}</p>}
+    entries.map(({ href, title, description, meta }) => (
+      <li>
+        <LinkArea class="entry">
+          <hgroup class="entry__header">
             {meta && <p class="entry__meta">{meta}</p>}
-            <Link class="entry__link" href={href} icon="arrow-right">
-              {linkLabel}
-              <span class="sr-only"> about {title}</span>
-            </Link>
-          </LinkArea>
-        </li>
-      )
-    )
+            <Heading class="entry__title">
+              <a class="entry__link" href={href}>
+                {title}
+              </a>
+            </Heading>
+          </hgroup>
+          {description && <p class="entry__description">{description}</p>}
+        </LinkArea>
+      </li>
+    ))
   }
 </ul>
 
@@ -52,12 +50,29 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
   .entry {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-gap-tight);
+    gap: var(--spacing-size-xs);
+  }
+
+  .entry__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-xxs);
+    margin: 0;
   }
 
   .entry__title {
     margin: 0;
     font-size: var(--typography-scale-subtitle);
+  }
+
+  .entry__link {
+    color: inherit;
+    text-decoration-line: none;
+  }
+
+  .entry:hover .entry__link,
+  .entry__link:focus-visible {
+    text-decoration-line: underline;
   }
 
   .entry__description {
@@ -68,10 +83,5 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
     opacity: var(--opacity-muted);
     margin: 0;
     font-size: var(--typography-scale-caption);
-  }
-
-  .entry__link {
-    align-self: flex-start;
-    margin-block-start: var(--spacing-size-xxs);
   }
 </style>
