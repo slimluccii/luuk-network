@@ -29,6 +29,7 @@ type ItemData = {
   description?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  _firstPublishedAt?: string | null;
   cover?: { responsiveImage?: ComponentProps<typeof Image>["data"] | null } | null;
 };
 
@@ -73,7 +74,9 @@ const seeAll = linkPage
           meta={
             data.startDate
               ? `${d(data.startDate, dateFormat)} – ${data.endDate ? d(data.endDate, dateFormat) : t("present")}`
-              : undefined
+              : data._firstPublishedAt
+                ? d(data._firstPublishedAt, { day: "numeric", month: "long", year: "numeric" })
+                : undefined
           }
           linkLabel={t("read_more")}
         />
