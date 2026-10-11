@@ -1,3 +1,0 @@
-fragment CollectionBlock on CollectionBlockRecord {
-  name
-}

@@ -25,7 +25,7 @@ query Loader($locale: SiteLocale, $fallbackLocales: [SiteLocale!]) {
     content {
       __typename
       ...HeroBlock
-      ...CollectionBlock
+      ...ListBlock
       ...SectionBlock
       ...TitleBlock
       ...LinkBlock

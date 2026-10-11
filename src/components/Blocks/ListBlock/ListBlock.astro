@@ -1,13 +1,13 @@
 ---
 import { getCollection } from "astro:content";
-import type { CollectionBlockFragment } from "~/generated/datocms";
+import type { ListBlockFragment } from "~/generated/datocms";
 import Section from "~/components/Section.astro";
 import EntryList from "~/components/EntryList.astro";
 import EmptyState from "~/components/EmptyState.astro";
 import { d, getLocale, t } from "~/i18n";
 
 type Props = {
-  block: CollectionBlockFragment;
+  block: ListBlockFragment;
 };
 
 const { block } = Astro.props;
@@ -28,7 +28,7 @@ type ItemData = {
 
 const items = (await getCollection("pages"))
   .map((entry) => entry.data as ItemData)
-  .filter((data) => data.locale === locale && data._modelApiKey === block.name)
+  .filter((data) => data.locale === locale && data._modelApiKey === block.model)
   .sort((a, b) => (b.startDate ?? "").localeCompare(a.startDate ?? ""));
 
 const entries = items.map((data) => ({
@@ -48,7 +48,7 @@ const entries = items.map((data) => ({
       <EntryList entries={entries} headingLevel={3} />
     ) : (
       <EmptyState>
-        <p>{t("collection_empty")}</p>
+        <p>{t("list_empty")}</p>
       </EmptyState>
     )
   }
