@@ -1,7 +1,6 @@
 ---
 import type { ComponentProps } from "astro/types";
 import { Image } from "@datocms/astro";
-import Link from "~/components/Link.astro";
 import LinkArea from "~/components/LinkArea.astro";
 
 type Props = {
@@ -9,22 +8,14 @@ type Props = {
   title: string;
   description: string;
   cover?: ComponentProps<typeof Image>["data"];
-  linkLabel?: string;
   meta?: string;
 };
 
-const {
-  href,
-  title,
-  linkLabel = "Read more",
-  description,
-  cover,
-  meta,
-} = Astro.props;
+const { href, title, description, cover, meta } = Astro.props;
 ---
 
 <li class="carousel-item">
-  <LinkArea>
+  <LinkArea class="carousel-item__area">
     {
       cover && (
         <Image
@@ -40,15 +31,15 @@ const {
       )
     }
     <div class="carousel-item__body">
-      <div class="carousel-item__text">
-          {meta && <p class="carousel-item__meta">{meta}</p>}
-          <h3 class="carousel-item__title">{title}</h3>
-          <p class="carousel-item__description">{description}</p>
-      </div>
-      <Link href={href} icon="arrow-right">
-        {linkLabel}
-        <span class="sr-only"> about {title}</span>
-      </Link>
+      <hgroup class="carousel-item__header">
+        {meta && <p class="carousel-item__meta">{meta}</p>}
+        <h3 class="carousel-item__title">
+          <a class="carousel-item__link link-plain" href={href}>
+            {title}
+          </a>
+        </h3>
+      </hgroup>
+      <p class="carousel-item__description">{description}</p>
     </div>
   </LinkArea>
 </li>
@@ -71,16 +62,27 @@ const {
   .carousel-item__body {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-size-m);
+    gap: var(--spacing-size-xs);
     border: 1px solid var(--color-surface-raised);
     background-color: var(--color-surface-raised);
     padding: var(--spacing-size-m);
   }
 
-  .carousel-item__text {
+  .carousel-item__header {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-size-s);
+    gap: var(--spacing-size-xxs);
+    margin: 0;
+  }
+
+  .carousel-item__link {
+    text-decoration-line: none;
+  }
+
+  .carousel-item__area:hover .carousel-item__link,
+  .carousel-item__link:focus-visible {
+    color: var(--color-brand-highlight);
+    text-decoration-line: underline;
   }
 
   .carousel-item__meta {
