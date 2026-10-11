@@ -1,0 +1,31 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"ul"> & {
+  tags: string[];
+};
+
+const { tags, class: className, ...attrs } = Astro.props;
+---
+
+<ul class:list={["tag-list", className]} {...attrs}>
+  {tags.map((tag) => <li class="tag-list__tag">{tag}</li>)}
+</ul>
+
+<style>
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-size-xxs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tag-list__tag {
+    border-radius: 999px;
+    background-color: var(--color-surface-raised);
+    padding: 0.125em 0.75em;
+    font-size: var(--typography-scale-caption);
+  }
+</style>

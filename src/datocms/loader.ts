@@ -14,6 +14,7 @@ type EntryData = (
   locale: string;
   path: string;
   onDemand?: boolean;
+  indexPage?: { title: string | null; path: string };
   translations: Array<{ locale: string; path: string }>;
 };
 
@@ -42,7 +43,7 @@ export function loader() {
           // the page <Seo> renders them in one pass.
           const favicon = _site.faviconMetaTags;
 
-          const pageById = new Map<string, RoutablePage>(allPages.map((p) => [p.id, p]));
+          const pageById = new Map(allPages.map((p) => [p.id, p]));
           const indexByCollection = buildIndexMap(allRoutes);
 
           const prefixCache = new Map<string, string>();
@@ -89,6 +90,7 @@ export function loader() {
                 ...record,
                 locale,
                 path: toUrl(`${prefixFor(indexPage)}/${record.slug}`),
+                indexPage: { title: indexPage.title, path: toUrl(prefixFor(indexPage)) },
                 _seoMetaTags: [...favicon, ...record._seoMetaTags],
               },
             });

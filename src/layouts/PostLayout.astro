@@ -1,24 +1,72 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import type { LoaderQuery } from "~/generated/datocms";
+import type { CdaStructuredTextValue } from "@datocms/astro";
 import Base from "~/layouts/Base.astro";
+import PageHeader from "~/components/PageHeader.astro";
+import PageHeaderEyebrow from "~/components/PageHeaderEyebrow.astro";
+import HeroTitle from "~/components/HeroTitle.astro";
+import TagList from "~/components/TagList.astro";
+import StructuredText from "~/components/StructuredText.astro";
+import { d } from "~/i18n";
 
 type Props = {
   entry: CollectionEntry<"pages">;
 };
 
-const { entry } = Astro.props;
-const { locale, slug } = entry.data;
+type PostData = LoaderQuery["allPosts"][number] & {
+  locale: string;
+  indexPage: { title: string | null; path: string };
+  translations: Array<{ locale: string; path: string }>;
+};
 
-// TODO: fetch post body by id + locale, render structured text
+const { entry } = Astro.props;
+const data = entry.data as unknown as PostData;
+
+const eyebrow = [data.indexPage.title, data.category?.name].filter(Boolean).join(" • ");
+const tags = data.tags.map((tag) => tag.name).filter((name): name is string => name != null);
+const dateFormat: Intl.DateTimeFormatOptions = {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+};
 ---
 
 <Base
-  locale={locale}
-  title={entry.data.title ?? undefined}
-  seoMetaTags={entry.data._seoMetaTags}
-  translations={entry.data.translations}
+  locale={data.locale}
+  title={data.title ?? undefined}
+  seoMetaTags={data._seoMetaTags}
+  translations={data.translations}
 >
-  <article>
-    <h1>{slug}</h1>
+  <article class="post">
+    <PageHeader class="post__header">
+      {eyebrow && <PageHeaderEyebrow>{eyebrow}</PageHeaderEyebrow>}
+      <HeroTitle>{data.title}</HeroTitle>
+      <div class="post__meta">
+        {
+          data._firstPublishedAt && (
+            <time datetime={data._firstPublishedAt}>{d(data._firstPublishedAt, dateFormat)}</time>
+          )
+        }
+        {tags.length > 0 && <TagList tags={tags} />}
+      </div>
+    </PageHeader>
+
+    {data.content && <StructuredText data={data.content as CdaStructuredTextValue} />}
   </article>
 </Base>
+
+<style>
+  .post__header {
+    gap: var(--spacing-size-m);
+    padding: var(--spacing-size-xxl) var(--spacing-size-l) 0;
+  }
+
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-size-s);
+  }
+</style>

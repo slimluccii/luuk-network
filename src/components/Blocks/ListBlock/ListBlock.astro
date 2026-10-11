@@ -24,12 +24,15 @@ type ItemData = {
   description?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  _firstPublishedAt?: string | null;
 };
 
 const items = (await getCollection("pages"))
   .map((entry) => entry.data as ItemData)
   .filter((data) => data.locale === locale && data._modelApiKey === block.model)
-  .sort((a, b) => (b.startDate ?? "").localeCompare(a.startDate ?? ""));
+  .sort((a, b) =>
+    (b.startDate ?? b._firstPublishedAt ?? "").localeCompare(a.startDate ?? a._firstPublishedAt ?? ""),
+  );
 
 const entries = items.map((data) => ({
   href: data.path,
@@ -37,7 +40,9 @@ const entries = items.map((data) => ({
   description: data.description ?? undefined,
   meta: data.startDate
     ? `${d(data.startDate, dateFormat)} – ${data.endDate ? d(data.endDate, dateFormat) : t("present")}`
-    : undefined,
+    : data._firstPublishedAt
+      ? d(data._firstPublishedAt, { day: "numeric", month: "long", year: "numeric" })
+      : undefined,
   linkLabel: t("read_more"),
 }));
 ---

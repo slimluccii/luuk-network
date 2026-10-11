@@ -38,6 +38,18 @@ query Loader($locale: SiteLocale, $fallbackLocales: [SiteLocale!]) {
     id
     slug
     title
+    description
+    _firstPublishedAt
+    category {
+      name
+    }
+    tags {
+      id
+      name
+    }
+    content {
+      value
+    }
     _seoMetaTags {
       tag
       attributes
