@@ -39,6 +39,7 @@ const items = resolved
   .filter((entry) => entry !== undefined)
   .map((entry) => entry.data as ItemData);
 
+const titleId = `featured-${crypto.randomUUID()}`;
 const link = block.link;
 const linkPage = link?.page
   ? await getEntry("pages", `${locale}/${link.page.id}`)
@@ -56,12 +57,12 @@ const seeAll = linkPage
   {
     block.title && (
       <SectionHeader>
-        <SectionTitle>{block.title}</SectionTitle>
+        <SectionTitle id={titleId}>{block.title}</SectionTitle>
       </SectionHeader>
     )
   }
 
-  <Carousel>
+  <Carousel aria-labelledby={block.title ? titleId : undefined}>
     {
       items.map((data) => (
         <CarouselItem

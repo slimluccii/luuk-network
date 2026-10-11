@@ -1,13 +1,156 @@
-<div class="carousel-wrapper">
-  <ul class="carousel">
-    <slot />
-  </ul>
-</div>
+---
+import type { HTMLAttributes } from "astro/types";
+import Button from "~/components/Button.astro";
+import { t } from "~/i18n";
+
+type Props = HTMLAttributes<"div">;
+
+const { class: className, ...attrs } = Astro.props;
+const scrollerId = `carousel-${crypto.randomUUID()}`;
+---
+
+<carousel-scroller
+  role="region"
+  aria-roledescription={t("carousel")}
+  {...attrs}
+  class:list={["carousel-wrapper", className]}
+  data-go-to={t("carousel_go_to")}
+>
+  <div class="carousel__viewport">
+    <ul class="carousel" id={scrollerId}>
+      <slot />
+    </ul>
+  </div>
+  <div class="carousel__controls" hidden>
+    <Button
+      type="button"
+      variant="transparent"
+      icon="arrow-left"
+      iconOnly
+      aria-controls={scrollerId}
+      data-carousel-previous
+    >
+      {t("carousel_previous")}
+    </Button>
+    <div class="carousel__markers"></div>
+    <Button
+      type="button"
+      variant="transparent"
+      icon="arrow-right"
+      iconOnly
+      aria-controls={scrollerId}
+      data-carousel-next
+    >
+      {t("carousel_next")}
+    </Button>
+  </div>
+</carousel-scroller>
+
+<script>
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  class CarouselScroller extends HTMLElement {
+    private scroller!: HTMLElement;
+    private items: HTMLElement[] = [];
+    private markers: HTMLButtonElement[] = [];
+    private controls!: HTMLElement;
+    private previous!: HTMLButtonElement;
+    private next!: HTMLButtonElement;
+    private resizeObserver = new ResizeObserver(() => this.update());
+
+    connectedCallback() {
+      const scroller = this.querySelector<HTMLElement>(".carousel");
+      const controls = this.querySelector<HTMLElement>(".carousel__controls");
+      const markers = this.querySelector<HTMLElement>(".carousel__markers");
+      const previous = this.querySelector<HTMLButtonElement>("[data-carousel-previous]");
+      const next = this.querySelector<HTMLButtonElement>("[data-carousel-next]");
+      if (!scroller || !controls || !markers || !previous || !next) return;
+
+      this.scroller = scroller;
+      this.controls = controls;
+      this.previous = previous;
+      this.next = next;
+      this.items = [...scroller.children].filter((child) => child instanceof HTMLElement);
+
+      const label = this.dataset.goTo ?? "";
+      this.markers = this.items.map((_, index) => {
+        const marker = document.createElement("button");
+        marker.type = "button";
+        marker.className = "carousel__marker";
+        marker.setAttribute("aria-label", label.replace("{index}", String(index + 1)));
+        marker.setAttribute("aria-controls", scroller.id);
+        marker.addEventListener("click", () => this.scrollToItem(index));
+        markers.append(marker);
+        return marker;
+      });
+
+      // aria-disabled instead of disabled, so a focused button keeps focus at either end.
+      previous.addEventListener("click", () => {
+        if (previous.getAttribute("aria-disabled") !== "true") this.scrollToItem(this.currentIndex() - 1);
+      });
+      next.addEventListener("click", () => {
+        if (next.getAttribute("aria-disabled") !== "true") this.scrollToItem(this.currentIndex() + 1);
+      });
+      scroller.addEventListener("scroll", () => this.update(), { passive: true });
+      this.resizeObserver.observe(scroller);
+      this.update();
+    }
+
+    disconnectedCallback() {
+      this.resizeObserver.disconnect();
+    }
+
+    private itemCenter(item: HTMLElement) {
+      const { left, width } = item.getBoundingClientRect();
+      return left - this.scroller.getBoundingClientRect().left + this.scroller.scrollLeft + width / 2;
+    }
+
+    private currentIndex() {
+      const center = this.scroller.scrollLeft + this.scroller.clientWidth / 2;
+      let nearest = 0;
+      this.items.forEach((item, index) => {
+        if (Math.abs(this.itemCenter(item) - center) < Math.abs(this.itemCenter(this.items[nearest]) - center)) {
+          nearest = index;
+        }
+      });
+      return nearest;
+    }
+
+    private scrollToItem(index: number) {
+      const item = this.items[Math.max(0, Math.min(index, this.items.length - 1))];
+      if (!item) return;
+      this.scroller.scrollTo({
+        left: this.itemCenter(item) - this.scroller.clientWidth / 2,
+        behavior: reducedMotion.matches ? "auto" : "smooth",
+      });
+    }
+
+    private update() {
+      const { scrollLeft, scrollWidth, clientWidth } = this.scroller;
+      this.controls.hidden = scrollWidth <= clientWidth + 1;
+      this.previous.setAttribute("aria-disabled", String(scrollLeft <= 1));
+      this.next.setAttribute("aria-disabled", String(scrollLeft >= scrollWidth - clientWidth - 1));
+
+      const current = this.currentIndex();
+      this.markers.forEach((marker, index) => {
+        marker.setAttribute("aria-current", String(index === current));
+      });
+    }
+  }
+
+  if (!customElements.get("carousel-scroller")) {
+    customElements.define("carousel-scroller", CarouselScroller);
+  }
+</script>
 
 <style>
   .carousel-wrapper {
-    position: relative;
+    display: block;
     margin-inline: calc(var(--spacing-size-l) * -1);
+  }
+
+  .carousel__viewport {
+    position: relative;
   }
 
   .carousel {
@@ -39,20 +182,12 @@
 
     &::before {
       inset-inline-start: 0;
-      background: linear-gradient(
-        to right,
-        var(--color-surface-base),
-        transparent
-      );
+      background: linear-gradient(to right, var(--color-surface-base), transparent);
     }
 
     &::after {
       inset-inline-end: 0;
-      background: linear-gradient(
-        to left,
-        var(--color-surface-base),
-        transparent
-      );
+      background: linear-gradient(to left, var(--color-surface-base), transparent);
     }
 
     @container scroll-state(scrollable: inline-start) {
@@ -66,5 +201,64 @@
         opacity: 1;
       }
     }
+  }
+
+  .carousel__controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-size-xs);
+    margin-block-start: var(--spacing-size-s);
+    padding-inline: var(--spacing-size-l);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .carousel__markers {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .carousel__markers :global(.carousel__marker) {
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    border: 0;
+    background: none;
+    padding: 0;
+    inline-size: 24px;
+    block-size: 24px;
+    color: inherit;
+
+    &::before {
+      opacity: 0.4;
+      transition: opacity var(--motion-feedback) ease;
+      border-radius: 50%;
+      background-color: currentColor;
+      inline-size: 0.5rem;
+      block-size: 0.5rem;
+      content: "";
+    }
+
+    &:hover::before {
+      opacity: 0.75;
+    }
+
+    &[aria-current="true"]::before {
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -2px;
+    }
+  }
+
+  .carousel__controls :global(.button[aria-disabled="true"]) {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
   }
 </style>
