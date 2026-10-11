@@ -25,6 +25,19 @@ import Border from "~/components/Border.astro";
     aspect-ratio: 16 / 9;
     overflow: hidden;
 
+    &:has(picture)::before {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-surface-canvas) 85%, transparent),
+        color-mix(in srgb, var(--color-surface-canvas) 55%, transparent) 20%,
+        transparent 40%
+      );
+      pointer-events: none;
+      content: "";
+    }
+
     &:has(picture)::after {
       position: absolute;
       inset: 0;

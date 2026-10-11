@@ -218,6 +218,7 @@ const menuItems = await getMenuItems(toLocale(locale));
     z-index: 1;
     inset-block-start: calc(var(--header-block-size) + var(--spacing-size-xs));
     inset-inline-start: var(--spacing-size-l);
+    text-shadow: 0 0 8px rgb(0 0 0 / 0.4);
   }
 
   /* Mobile-first: the nav region has no in-flow content on narrow (sidebar
@@ -303,6 +304,13 @@ const menuItems = await getMenuItems(toLocale(locale));
     }
   }
 
+  @supports (container-type: scroll-state) {
+    .header :global(.logo) {
+      transition: filter var(--motion-feedback) ease-out;
+      filter: drop-shadow(0 0 8px rgb(0 0 0 / 0.4));
+    }
+  }
+
   @property --header-fill {
     syntax: "<percentage>";
     inherits: false;
@@ -327,6 +335,10 @@ const menuItems = await getMenuItems(toLocale(locale));
       --header-opacity: 100%;
       transition-delay: 0s, 0s, var(--motion-feedback);
       border-block-end-color: var(--color-surface-base);
+    }
+
+    .header :global(.logo) {
+      filter: none;
     }
   }
 </style>
