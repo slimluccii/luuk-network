@@ -3,8 +3,12 @@ import type { ComponentProps } from "astro/types";
 import Base from "~/layouts/Base.astro";
 import PageHeader from "~/components/PageHeader.astro";
 import PageHeaderEyebrow from "~/components/PageHeaderEyebrow.astro";
-import { t } from "~/i18n";
+import { getLocale, t } from "~/i18n";
 
+// Rendered per request so the page follows the language of the requested URL.
+export const prerender = false;
+
+const [beforeLink, afterLink] = t("page_not_found_next").split("{link}");
 
 const seoMetaTags: NonNullable<ComponentProps<typeof Base>["seoMetaTags"]> = [
   { tag: "title", content: t("page_not_found") },
@@ -19,6 +23,9 @@ const seoMetaTags: NonNullable<ComponentProps<typeof Base>["seoMetaTags"]> = [
     </PageHeader>
     <div class="error-state__body">
       <p>{t("page_not_found_body")}</p>
+      <p>
+        {beforeLink}<a href={`/${getLocale()}/`}>{t("homepage")}</a>{afterLink}
+      </p>
     </div>
   </article>
 </Base>
