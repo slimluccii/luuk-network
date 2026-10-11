@@ -8,7 +8,7 @@ import HeroMeta from "~/components/HeroMeta.astro";
 import HeroTitle from "~/components/HeroTitle.astro";
 import TagList from "~/components/TagList.astro";
 import StructuredText from "~/components/StructuredText.astro";
-import { d } from "~/i18n";
+import { d, t } from "~/i18n";
 
 type Props = {
   entry: CollectionEntry<"pages">;
@@ -24,6 +24,7 @@ const { entry } = Astro.props;
 const data = entry.data as unknown as PostData;
 
 const eyebrow = [data.indexPage.title, data.category?.name].filter(Boolean);
+const sourceHost = data.sourceUrl ? new URL(data.sourceUrl).hostname.replace(/^www\./, "") : null;
 const tags = data.tags.map((tag) => tag.name).filter((name): name is string => name != null);
 const dateFormat: Intl.DateTimeFormatOptions = {
   weekday: "short",
@@ -70,6 +71,17 @@ const dateFormat: Intl.DateTimeFormatOptions = {
         }
         {tags.length > 0 && <TagList tags={tags} />}
       </div>
+      {
+        data.sourceUrl && (
+          <p class="post__source">
+            {t("originally_published_on")}{" "}
+            <a href={data.sourceUrl}>
+              {sourceHost}
+              <span aria-hidden="true"> ↗</span>
+            </a>
+          </p>
+        )
+      }
     </header>
 
     {data.content && <StructuredText data={data.content as CdaStructuredTextValue} />}
@@ -95,5 +107,15 @@ const dateFormat: Intl.DateTimeFormatOptions = {
 
   .post__separator {
     margin-inline: 0.25em;
+  }
+
+  .post__source {
+    opacity: var(--opacity-muted);
+    margin: 0;
+    font-size: var(--typography-scale-caption);
+
+    a {
+      color: inherit;
+    }
   }
 </style>

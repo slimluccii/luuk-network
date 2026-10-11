@@ -40,6 +40,7 @@ query Loader($locale: SiteLocale, $fallbackLocales: [SiteLocale!]) {
     title
     description
     _firstPublishedAt
+    sourceUrl
     category {
       name
     }
