@@ -33,7 +33,7 @@ type Props = ComponentProps<typeof DatocmsStructuredText>;
   }
 
   .structured-text :global(:is(ul, ol)) {
-    padding-inline-start: var(--spacing-size-m);
+    padding-inline-start: calc(var(--spacing-size-l) + var(--spacing-size-m));
   }
 
   .structured-text :global(li + li) {
