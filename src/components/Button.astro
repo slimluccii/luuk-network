@@ -76,7 +76,8 @@ const {
   }
 
   .button--icon-only {
-    padding: var(--spacing-size-xs);
+    /* The icon box is 1em wide and 1lh tall, so widen the sides by half the difference to stay square. */
+    padding: var(--spacing-size-xs) calc(var(--spacing-size-xs) + (1lh - 1em) / 2);
   }
 
   .button--secondary {
