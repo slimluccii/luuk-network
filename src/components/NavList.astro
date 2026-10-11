@@ -30,7 +30,7 @@ const { pathname } = Astro.url;
       return (
         <li>
           <a
-            class="nav-list__link"
+            class="nav-list__link link-plain"
             href={href}
             aria-current={ariaCurrent(state)}
           >
@@ -40,7 +40,7 @@ const { pathname } = Astro.url;
             <ul class="nav-list__sublist" role="list">
               <li>
                 <a
-                  class="nav-list-sublink"
+                  class="nav-list-sublink link-plain"
                   href={pathname}
                   aria-current="page"
                 >
@@ -71,7 +71,6 @@ const { pathname } = Astro.url;
     display: block;
     opacity: var(--opacity-muted);
     transition: var(--motion-feedback) ease;
-    color: inherit;
     text-decoration: underline;
     text-decoration-color: transparent;
 
@@ -108,7 +107,6 @@ const { pathname } = Astro.url;
     gap: var(--spacing-size-xxs);
     opacity: var(--opacity-muted);
     transition: var(--motion-feedback) ease;
-    color: inherit;
     font-size: var(--typography-scale-caption);
     text-decoration: underline;
     text-decoration-color: transparent;

@@ -10,7 +10,7 @@ type Props = HTMLAttributes<"a"> & {
 const { icon, class: className, ...attrs } = Astro.props;
 ---
 
-<a class:list={["link", className]} {...attrs}>
+<a class:list={["link", "link-plain", className]} {...attrs}>
   {icon && <Icon class="link__icon" name={icon} />}
   <span class="link__label">
     <slot />
@@ -22,6 +22,5 @@ const { icon, class: className, ...attrs } = Astro.props;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-size-xs);
-    color: inherit;
   }
 </style>

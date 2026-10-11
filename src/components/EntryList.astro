@@ -25,7 +25,7 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
           <hgroup class="entry__header">
             {meta && <p class="entry__meta">{meta}</p>}
             <Heading class="entry__title">
-              <a class="entry__link" href={href}>
+              <a class="entry__link link-plain" href={href}>
                 {title}
               </a>
             </Heading>
@@ -66,12 +66,12 @@ const Heading = `h${headingLevel}` as "h2" | "h3";
   }
 
   .entry__link {
-    color: inherit;
     text-decoration-line: none;
   }
 
   .entry:hover .entry__link,
   .entry__link:focus-visible {
+    color: var(--color-brand-highlight);
     text-decoration-line: underline;
   }
 

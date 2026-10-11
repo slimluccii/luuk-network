@@ -53,6 +53,15 @@ a {
   }
 }
 
+/* Links in the surrounding text color invert the default: they turn highlight on hover. */
+.link-plain {
+  color: inherit;
+
+  &:hover {
+    color: var(--color-brand-highlight);
+  }
+}
+
 :is(h1, h2, h3, h4, h5, h6):has(.heading-anchor) {
   display: flex;
   gap: 0.25em;

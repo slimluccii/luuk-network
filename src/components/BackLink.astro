@@ -10,7 +10,7 @@ type Props = HTMLAttributes<"a"> & {
 const { overview, class: className, ...attrs } = Astro.props;
 ---
 
-<a {...attrs} class:list={["back-link", className]}>
+<a {...attrs} class:list={["back-link", "link-plain", className]}>
   <Icon class="back-link__icon" name="arrow-left" />
   <span>{t("back_to", { title: overview })}</span>
 </a>
@@ -25,7 +25,6 @@ const { overview, class: className, ...attrs } = Astro.props;
     transition:
       opacity var(--motion-feedback) ease,
       text-decoration-color var(--motion-feedback) ease;
-    color: inherit;
     font-size: var(--typography-scale-caption);
     text-decoration: underline;
     text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
