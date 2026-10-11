@@ -21,14 +21,27 @@ h2 {
 
 h1 {
   font-size: var(--typography-scale-display);
+  line-height: 1;
 }
 
 h2 {
   font-size: var(--typography-scale-heading);
+  line-height: 1.1;
 }
 
 h3 {
   font-size: var(--typography-scale-subtitle);
+  line-height: 1.2;
+}
+
+h4,
+h5 {
+  font-size: var(--typography-scale-body);
+}
+
+h6 {
+  font-size: var(--typography-scale-caption);
+  line-height: 1.4;
 }
 
 a {
