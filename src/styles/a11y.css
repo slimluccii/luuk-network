@@ -1,4 +1,5 @@
 :focus-visible {
+  z-index: 1;
   outline: 2px dashed var(--color-brand-highlight);
   outline-offset: 4px;
 }
