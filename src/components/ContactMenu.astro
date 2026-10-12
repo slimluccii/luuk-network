@@ -1,0 +1,68 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Button from "~/components/Button.astro";
+import Icon from "~/components/Icon.astro";
+import { email, socialLinks } from "~/data/contact";
+import { t } from "~/i18n";
+
+type Props = HTMLAttributes<"div">;
+
+const { class: className, ...attrs } = Astro.props;
+const menuId = `contact-menu-${crypto.randomUUID()}`;
+const links = [
+  { href: `mailto:${email}`, icon: "envelope" as const, title: t("email"), external: false },
+  ...socialLinks.map((link) => ({ ...link, external: true })),
+];
+---
+
+<div {...attrs} class:list={["contact-menu", className]}>
+  <Button type="button" variant="secondary" icon="envelope" popovertarget={menuId}>
+    {t("contact")}
+  </Button>
+  <ul id={menuId} class="contact-menu__panel" popover role="list">
+    {
+      links.map(({ href, icon, title, external }) => (
+        <li>
+          <a
+            class="contact-menu__link link-plain"
+            href={href}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          >
+            <Icon name={icon} />
+            {title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .contact-menu__panel {
+    border: 1px solid var(--color-surface-raised);
+    background-color: var(--color-surface-overlay);
+    padding: var(--spacing-size-xs);
+    min-inline-size: 12rem;
+    list-style: none;
+
+    /* Without anchor positioning the popover keeps its default centered position. */
+    @supports (position-area: block-end) {
+      position-area: block-end span-inline-start;
+      position-try-fallbacks: flip-block, flip-inline;
+      margin: var(--spacing-size-xs) 0 0;
+    }
+  }
+
+  .contact-menu__link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-size-xs);
+    padding: var(--spacing-size-xs) var(--spacing-size-s);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--color-surface-raised);
+    }
+  }
+</style>

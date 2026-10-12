@@ -1,13 +1,6 @@
 fragment HeroBlock on HeroBlockRecord {
   title
   description
-  action {
-    ... on ButtonRecord {
-      label
-      url
-      icon
-    }
-  }
   coverImage {
     responsiveImage(imgixParams: { ar: "16:9", fit: crop, w: 1600 }) {
       ...ResponsiveImage
