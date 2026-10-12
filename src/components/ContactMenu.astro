@@ -1,25 +1,33 @@
 ---
 import type { HTMLAttributes } from "astro/types";
-import Button from "~/components/Button.astro";
+import SplitButton from "~/components/SplitButton.astro";
 import Icon from "~/components/Icon.astro";
 import { email, socialLinks } from "~/data/contact";
 import { t } from "~/i18n";
 
-type Props = HTMLAttributes<"div">;
+type Props = HTMLAttributes<"a">;
 
-const { class: className, ...attrs } = Astro.props;
-const menuId = `contact-menu-${crypto.randomUUID()}`;
+const github = socialLinks.find((link) => link.icon === "github")!;
 const links = [
   { href: `mailto:${email}`, icon: "envelope" as const, title: t("email"), external: false },
-  ...socialLinks.map((link) => ({ ...link, external: true })),
+  ...socialLinks
+    .filter((link) => link !== github)
+    .map((link) => ({ ...link, external: true })),
 ];
 ---
 
-<div {...attrs} class:list={["contact-menu", className]}>
-  <Button type="button" variant="secondary" icon="envelope" popovertarget={menuId}>
-    {t("contact")}
-  </Button>
-  <ul id={menuId} class="contact-menu__panel" popover role="list">
+<SplitButton
+  as="a"
+  variant="secondary"
+  icon={github.icon}
+  href={github.href}
+  target="_blank"
+  rel="noopener noreferrer"
+  menuLabel={t("more_contact_options")}
+  {...Astro.props}
+>
+  {github.title}
+  <ul slot="menu" class="contact-menu__list" role="list">
     {
       links.map(({ href, icon, title, external }) => (
         <li>
@@ -35,22 +43,13 @@ const links = [
       ))
     }
   </ul>
-</div>
+</SplitButton>
 
 <style>
-  .contact-menu__panel {
-    border: 1px solid var(--color-surface-raised);
-    background-color: var(--color-surface-overlay);
-    padding: var(--spacing-size-xs);
-    min-inline-size: 12rem;
+  .contact-menu__list {
+    margin: 0;
+    padding: 0;
     list-style: none;
-
-    /* Without anchor positioning the popover keeps its default centered position. */
-    @supports (position-area: block-end) {
-      position-area: block-end span-inline-start;
-      position-try-fallbacks: flip-block, flip-inline;
-      margin: var(--spacing-size-xs) 0 0;
-    }
   }
 
   .contact-menu__link {

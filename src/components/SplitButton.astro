@@ -1,0 +1,50 @@
+---
+import type { ComponentProps } from "astro/types";
+import Button from "~/components/Button.astro";
+
+type Props = ComponentProps<typeof Button> & {
+  menuLabel: string;
+};
+
+const { menuLabel, variant, class: className, ...props } = Astro.props;
+const menuId = `split-button-${crypto.randomUUID()}`;
+---
+
+<div class="split-button">
+  <Button variant={variant} class:list={["split-button__action", className]} {...props}>
+    <slot />
+  </Button>
+  <Button
+    type="button"
+    variant={variant}
+    class="split-button__toggle"
+    icon="chevron-down"
+    iconOnly
+    popovertarget={menuId}
+  >
+    {menuLabel}
+  </Button>
+  <div id={menuId} class="split-button__menu" popover>
+    <slot name="menu" />
+  </div>
+</div>
+
+<style>
+  .split-button {
+    display: inline-flex;
+  }
+
+  .split-button__menu {
+    border: 1px solid var(--color-surface-raised);
+    background-color: var(--color-surface-overlay);
+    padding: var(--spacing-size-xs);
+    min-inline-size: 12rem;
+
+    /* Without anchor positioning the popover keeps its default centered position. */
+    @supports (position-area: block-end) {
+      position-area: block-end span-inline-start;
+      position-try-fallbacks: flip-block, flip-inline;
+      margin: var(--spacing-size-xs) 0 0;
+    }
+  }
+</style>
