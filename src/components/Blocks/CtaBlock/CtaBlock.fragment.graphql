@@ -1,0 +1,5 @@
+fragment CtaBlock on CtaBlockRecord {
+  title
+  text
+  label
+}

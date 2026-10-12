@@ -1,0 +1,40 @@
+---
+import type { CtaBlockFragment } from "~/generated/datocms";
+import Button from "~/components/Button.astro";
+import { email } from "~/data/contact";
+
+type Props = {
+  block: CtaBlockFragment;
+};
+
+const { block } = Astro.props;
+const titleId = `cta-${crypto.randomUUID()}`;
+---
+
+<section class="cta" aria-labelledby={titleId}>
+  <h2 class="cta__title" id={titleId}>{block.title}</h2>
+  {block.text && <p class="cta__text">{block.text}</p>}
+  <Button as="a" class="cta__button" icon="envelope" href={`mailto:${email}`}>
+    {block.label}
+  </Button>
+</section>
+
+<style>
+  .cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-size-s);
+    background-color: var(--color-surface-base);
+    padding: var(--spacing-size-xl) var(--spacing-size-l);
+  }
+
+  .cta__title,
+  .cta__text {
+    margin: 0;
+  }
+
+  .cta__button {
+    margin-block-start: var(--spacing-size-xs);
+  }
+</style>
