@@ -82,10 +82,10 @@ const menuItems = await getMenuItems(toLocale(locale));
     <slot name="head" />
   </head>
   <body>
-    <Button as="a" class="kb-only skip-link" href="#main">
+    <Button as="a" variant="highlight" class="kb-only skip-link" href="#main">
       {t("skip_to_main_content")}
     </Button>
-    <Button as="a" class="kb-only skip-link" href="#navigation">
+    <Button as="a" variant="highlight" class="kb-only skip-link" href="#navigation">
       {t("skip_to_navigation")}
     </Button>
     <div class="page">
@@ -161,9 +161,15 @@ const menuItems = await getMenuItems(toLocale(locale));
     }
   }
 
+  :global(:root) {
+    --header-block-size: calc(var(--typography-scale-subtitle) + 2 * var(--spacing-size-xs));
+  }
+
   .skip-link:focus {
     position: fixed;
-    inset-block-start: var(--spacing-size-xs);
+    z-index: 1000;
+    translate: -50% 0;
+    inset-block-start: calc(var(--header-block-size) + var(--spacing-size-xs));
     inset-inline-start: 50%;
   }
 
@@ -276,8 +282,6 @@ const menuItems = await getMenuItems(toLocale(locale));
   }
 
   .content__border {
-    --header-block-size: calc(var(--typography-scale-subtitle) + 2 * var(--spacing-size-xs));
-
     display: grid;
     position: relative;
     grid-template-rows: auto 1fr auto;
