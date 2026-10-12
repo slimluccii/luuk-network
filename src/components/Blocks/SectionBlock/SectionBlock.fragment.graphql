@@ -3,4 +3,15 @@ fragment SectionBlock on SectionBlockRecord {
   content {
     value
   }
+  links {
+    ... on LinkBlockRecord {
+      label
+      icon {
+        name
+      }
+      page {
+        id
+      }
+    }
+  }
 }

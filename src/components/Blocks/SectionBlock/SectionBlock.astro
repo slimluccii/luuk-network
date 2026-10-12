@@ -1,16 +1,37 @@
 ---
 import type { SectionBlockFragment } from "~/generated/datocms";
+import type { IconName } from "~/generated/icon-sprite";
+import { getEntry } from "astro:content";
 import { StructuredText, type CdaStructuredTextValue } from "@datocms/astro";
 import Section from "~/components/Section.astro";
 import SectionHeader from "~/components/SectionHeader.astro";
 import SectionTitle from "~/components/SectionTitle.astro";
 import SectionContent from "~/components/SectionContent.astro";
+import SectionActions from "~/components/SectionActions.astro";
+import Button from "~/components/Button.astro";
+import { getLocale } from "~/i18n";
 
 type Props = {
   block: SectionBlockFragment;
 };
 
 const { block } = Astro.props;
+
+const locale = getLocale();
+const links = (
+  await Promise.all(
+    block.links.map(async (link) => {
+      const page = link.page ? await getEntry("pages", `${locale}/${link.page.id}`) : undefined;
+      return page
+        ? {
+            label: link.label,
+            href: (page.data as { path: string }).path,
+            icon: link.icon?.name as IconName | undefined,
+          }
+        : undefined;
+    }),
+  )
+).filter((link) => link !== undefined);
 ---
 
 <Section>
@@ -26,6 +47,17 @@ const { block } = Astro.props;
       <SectionContent>
         <StructuredText data={block.content as CdaStructuredTextValue} />
       </SectionContent>
+    )
+  }
+  {
+    links.length > 0 && (
+      <SectionActions>
+        {links.map((link) => (
+          <Button as="a" icon={link.icon} href={link.href}>
+            {link.label}
+          </Button>
+        ))}
+      </SectionActions>
     )
   }
 </Section>
