@@ -35,14 +35,4 @@ const { overview, class: className, ...attrs } = Astro.props;
       text-decoration-color: currentColor;
     }
   }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .back-link__icon {
-      transition: translate var(--motion-feedback) ease;
-    }
-
-    .back-link:hover .back-link__icon {
-      translate: -0.2em 0;
-    }
-  }
 </style>
