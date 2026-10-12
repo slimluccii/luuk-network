@@ -1,14 +1,30 @@
 ---
+import type { StoryBlockFragment } from "~/generated/datocms";
+import type { CdaStructuredTextValue } from "@datocms/astro";
+import StructuredText from "~/components/StructuredText.astro";
+
 type Props = {
-  block: {
-    title?: string;
-  };
+  block: StoryBlockFragment;
 };
 
 const { block } = Astro.props;
-// TODO: render `content` (structured_text)
 ---
 
 <section class="story-block">
-  {block.title && <h2>{block.title}</h2>}
+  {block.title && <h2 class="story-block__title">{block.title}</h2>}
+  {block.content && <StructuredText data={block.content as CdaStructuredTextValue} />}
 </section>
+
+<style>
+  .story-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-l);
+    padding-block: var(--spacing-size-xl);
+  }
+
+  .story-block__title {
+    margin: 0;
+    padding-inline: var(--spacing-size-l);
+  }
+</style>
