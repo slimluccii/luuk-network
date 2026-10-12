@@ -1,4 +1,6 @@
 ---
+import Border from "~/components/Border.astro";
+
 type Props = {
   blocks: Array<Record<string, any>>;
 };
@@ -6,19 +8,25 @@ type Props = {
 const { blocks } = Astro.props;
 ---
 
-{
-  blocks.map(async (block) => {
-    const blockName = block.__typename.replace("Record", "");
+<div class="blocks">
+  {
+    blocks.map(async (block) => {
+      const blockName = block.__typename.replace("Record", "");
 
-    try {
-      const Block = (await import(`./${blockName}/${blockName}.astro`)).default;
-      return <Block block={block} />;
-    } catch (error) {
-      return (
-        <script is:inline>
-          console.error(`Error loading block ${blockName}: ${error}`);
-        </script>
-      );
-    }
-  })
-}
+      try {
+        const Block = (await import(`./${blockName}/${blockName}.astro`)).default;
+        return (
+          <Border class="blocks__item">
+            <Block block={block} />
+          </Border>
+        );
+      } catch (error) {
+        return (
+          <script is:inline>
+            console.error(`Error loading block ${blockName}: ${error}`);
+          </script>
+        );
+      }
+    })
+  }
+</div>
