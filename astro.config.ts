@@ -32,6 +32,9 @@ export default defineConfig({
     enabled: false,
   },
   prefetch: true,
+  markdown: {
+    syntaxHighlight: false,
+  },
   security: {
     csp: {
       directives: [
