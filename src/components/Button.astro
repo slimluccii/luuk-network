@@ -5,7 +5,7 @@ import Icon from "~/components/Icon.astro";
 
 type Props<Tag extends "button" | "a" = "button"> = Polymorphic<{
   as: Tag;
-  variant?: "primary" | "secondary" | "transparent" | "link";
+  variant?: "primary" | "secondary" | "highlight" | "transparent" | "link";
   icon?: IconName;
   iconOnly?: boolean;
 }>;
@@ -70,6 +70,10 @@ const {
 
   .button--secondary {
     --button-color: var(--color-brand-secondary);
+  }
+
+  .button--highlight {
+    --button-color: var(--color-brand-highlight);
   }
 
   .button--transparent {

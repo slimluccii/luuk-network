@@ -32,10 +32,10 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   }
 </nav>
 {/* #page is the sticky anchor in <Base>, so closing without JS keeps the scroll position. */}
-<Button as="a" class="menu__close" href="#page" icon="xmark" iconOnly>
+<Button as="a" variant="highlight" class="menu__close" href="#page" icon="xmark" iconOnly>
   {t("close")}
 </Button>
-<Button as="a" class="menu__trigger" href="#navigation" icon="bars" iconOnly>
+<Button as="a" variant="highlight" class="menu__trigger" href="#navigation" icon="bars" iconOnly>
   {t("menu")}
 </Button>
 
@@ -139,8 +139,6 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
 
   .menu__trigger,
   .menu__close {
-    --button-color: var(--color-brand-highlight);
-
     position: fixed;
     z-index: 1000;
     inset-block-end: max(var(--spacing-size-m), env(safe-area-inset-bottom));
