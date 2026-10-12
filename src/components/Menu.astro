@@ -25,19 +25,17 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   <div class="menu__items">
     <NavList items={items} currentPageTitle={currentPageTitle} showSubList />
   </div>
-  <div class="menu__footer">
-    {
-      translations.length > 0 && (
-        <LocaleSelector current={locale} translations={translations} />
-      )
-    }
-    {/* #page is the sticky anchor in <Base>, so closing without JS keeps the scroll position. */}
-    <Button as="a" class="menu__close" href="#page" icon="xmark">
-      {t("close")}
-    </Button>
-  </div>
+  {
+    translations.length > 0 && (
+      <LocaleSelector current={locale} translations={translations} />
+    )
+  }
 </nav>
-<Button as="a" class="menu__trigger" href="#navigation" icon="bars">
+{/* #page is the sticky anchor in <Base>, so closing without JS keeps the scroll position. */}
+<Button as="a" class="menu__close" href="#page" icon="xmark" iconOnly>
+  {t("close")}
+</Button>
+<Button as="a" class="menu__trigger" href="#navigation" icon="bars" iconOnly>
   {t("menu")}
 </Button>
 
@@ -45,6 +43,7 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   const root = document.documentElement;
   const nav = document.getElementById("navigation")!;
   const trigger = document.querySelector<HTMLElement>(".menu__trigger")!;
+  const closeLink = document.querySelector<HTMLElement>(".menu__close")!;
 
   let lockedScrollY = 0;
 
@@ -55,7 +54,7 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   function setOutsideInert(inert: boolean) {
     for (let el: HTMLElement = nav; el !== document.body; el = el.parentElement!) {
       for (const sibling of el.parentElement!.children) {
-        if (sibling !== el) (sibling as HTMLElement).inert = inert;
+        if (sibling !== el && sibling !== closeLink) (sibling as HTMLElement).inert = inert;
       }
     }
   }
@@ -84,7 +83,7 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   document.addEventListener("click", (event) => {
     const target = event.target as Element;
     if (isOpen()) {
-      if (!nav.contains(target) || target.closest(".menu__close")) {
+      if (!nav.contains(target)) {
         event.preventDefault();
         close();
       }
@@ -138,25 +137,25 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
     padding: 0;
   }
 
-  .menu__footer {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-size-s);
-
-    & > :global(.locale-selector) {
-      flex: 1;
-    }
-  }
-
-  .menu__trigger {
+  .menu__trigger,
+  .menu__close {
     position: fixed;
     z-index: 1000;
-    inset-block-end: max(var(--spacing-size-l), env(safe-area-inset-bottom));
-    inset-inline-end: var(--spacing-size-l);
+    inset-block-end: max(var(--spacing-size-m), env(safe-area-inset-bottom));
+    inset-inline-end: var(--spacing-size-m);
+    border-color: var(--color-brand-highlight);
+    background-color: var(--color-brand-highlight);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.12),
+      0 12px 24px -10px rgba(0, 0, 0, 0.25);
     /* Visibility waits for the fade when hiding, so the button stays focusable until it's gone. */
     transition:
       opacity var(--motion-transition) ease,
       visibility 0s linear 0s;
+  }
+
+  .menu__close {
+    display: none;
   }
 
   .menu__trigger--hidden {
@@ -170,17 +169,26 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   @container (width <= 800px) {
     .menu {
       gap: var(--spacing-size-l);
-      background-color: var(--color-surface-overlay);
+      border-inline-end: 1px solid var(--color-brand-neutral);
       padding: var(--spacing-size-l);
       inline-size: var(--menu-width);
+    }
+
+    /* Leaves room beside it for the close button. */
+    .menu > :global(.locale-selector) {
+      align-self: start;
     }
 
     :global(html:not(.js-enabled)) .menu:not(:target) {
       display: none;
     }
 
-    :global(html:not(.js-enabled)) .menu:target + .menu__trigger {
+    :global(html:not(.js-enabled)) .menu:target ~ .menu__trigger {
       display: none;
+    }
+
+    :global(html:not(.js-enabled)) .menu:target ~ .menu__close {
+      display: inline-flex;
     }
 
     :global(.js-enabled) .menu {
@@ -196,6 +204,10 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
 
     :global(html[data-menu-open]) .menu__trigger {
       display: none;
+    }
+
+    :global(html[data-menu-open]) .menu__close {
+      display: inline-flex;
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -218,8 +230,7 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
       align-items: center;
     }
 
-    .menu__trigger,
-    .menu__close {
+    .menu__trigger {
       display: none;
     }
   }

@@ -225,13 +225,15 @@ const menuItems = await getMenuItems(toLocale(locale));
     :global(html[data-menu-open]) .content {
       translate: var(--menu-width) 0;
       opacity: 0.4;
+      filter: blur(8px);
     }
 
     @media (prefers-reduced-motion: no-preference) {
       :global(.js-enabled) .content {
         transition:
           translate var(--motion-transition) ease,
-          opacity var(--motion-transition) ease;
+          opacity var(--motion-transition) ease,
+          filter var(--motion-transition) ease;
       }
     }
   }
