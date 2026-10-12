@@ -17,9 +17,7 @@ const languageName = (locale: string) =>
   new Intl.DisplayNames([locale], { type: "language" }).of(locale) ??
   locale.toUpperCase();
 
-// Unique per instance: the selector renders twice (sidebar + drawer), so a
-// fixed id would duplicate and break the label's `for` association.
-const selectId = `locale-selector-${crypto.randomUUID()}`;
+const selectId = "locale-selector";
 ---
 
 <locale-select class="locale-selector">

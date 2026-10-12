@@ -10,7 +10,7 @@
 
 <script is:inline>
   (() => {
-    const mq = matchMedia("(min-width: 800px)");
+    const mq = matchMedia("(width > 800px)");
     const apply = () => {
       const viewport = mq.matches ? "wide" : "narrow";
       if (document.documentElement.dataset.viewport === viewport) return;

@@ -1,7 +1,9 @@
 ---
-import MenuSidebar from "~/components/MenuSidebar.astro";
-import MenuDrawer from "~/components/MenuDrawer.astro";
+import Button from "~/components/Button.astro";
+import LocaleSelector from "~/components/LocaleSelector.astro";
+import NavList from "~/components/NavList.astro";
 import type { MenuItem } from "~/datocms/menu";
+import { t } from "~/i18n";
 
 interface Props {
   items: MenuItem[];
@@ -13,10 +15,206 @@ interface Props {
 const { items, currentPageTitle, locale, translations } = Astro.props;
 ---
 
-<MenuSidebar items={items} currentPageTitle={currentPageTitle} />
-<MenuDrawer
-  items={items}
-  currentPageTitle={currentPageTitle}
-  locale={locale}
-  translations={translations}
-/>
+{/* Also the skip link target, hence the id and tabindex. */}
+<nav
+  id="navigation"
+  class="menu"
+  aria-label={t("main_navigation")}
+  tabindex="-1"
+>
+  <div class="menu__items">
+    <NavList items={items} currentPageTitle={currentPageTitle} showSubList />
+  </div>
+  <div class="menu__footer">
+    {
+      translations.length > 0 && (
+        <LocaleSelector current={locale} translations={translations} />
+      )
+    }
+    {/* #page is the sticky anchor in <Base>, so closing without JS keeps the scroll position. */}
+    <Button as="a" class="menu__close" href="#page" icon="xmark">
+      {t("close")}
+    </Button>
+  </div>
+</nav>
+<Button as="a" class="menu__trigger" href="#navigation" icon="bars">
+  {t("menu")}
+</Button>
+
+<script>
+  const root = document.documentElement;
+  const nav = document.getElementById("navigation")!;
+  const trigger = document.querySelector<HTMLElement>(".menu__trigger")!;
+
+  const isOpen = () => "menuOpen" in root.dataset;
+  // The trigger only shows in the narrow layout, the only one where the menu opens.
+  const isNarrow = () => getComputedStyle(trigger).display !== "none";
+
+  function setOutsideInert(inert: boolean) {
+    for (let el: HTMLElement = nav; el !== document.body; el = el.parentElement!) {
+      for (const sibling of el.parentElement!.children) {
+        if (sibling !== el) (sibling as HTMLElement).inert = inert;
+      }
+    }
+  }
+
+  function open() {
+    root.dataset.menuOpen = "";
+    setOutsideInert(true);
+    trigger.setAttribute("aria-expanded", "true");
+    nav.focus({ preventScroll: true });
+  }
+
+  function close() {
+    delete root.dataset.menuOpen;
+    setOutsideInert(false);
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.focus({ preventScroll: true });
+  }
+
+  trigger.setAttribute("aria-controls", nav.id);
+  trigger.setAttribute("aria-expanded", "false");
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as Element;
+    if (isOpen()) {
+      if (!nav.contains(target) || target.closest(".menu__close")) {
+        event.preventDefault();
+        close();
+      }
+    } else if (target.closest('a[href="#navigation"]') && isNarrow()) {
+      event.preventDefault();
+      open();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isOpen()) close();
+  });
+
+  document.addEventListener("viewportchange", () => {
+    if (root.dataset.viewport === "wide" && isOpen()) close();
+  });
+
+  const footerNav = document.querySelector("[data-footer-nav]");
+  if (footerNav) {
+    new IntersectionObserver(([entry]) => {
+      trigger.classList.toggle("menu__trigger--hidden", entry.isIntersecting);
+    }).observe(footerNav);
+  }
+</script>
+
+<style>
+  .menu {
+    display: flex;
+    position: sticky;
+    flex-direction: column;
+    align-self: start;
+    inset-block-start: 0;
+    block-size: 100dvh;
+
+    /* Focused from script when it opens; a ring would outline the whole menu. */
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .menu__items {
+    display: flex;
+    flex: 1;
+    min-block-size: 0;
+  }
+
+  .menu__items :global(.nav-list) {
+    flex: 1;
+    justify-content: flex-start;
+    min-block-size: 0;
+    padding: 0;
+  }
+
+  .menu__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-size-s);
+
+    & > :global(.locale-selector) {
+      flex: 1;
+    }
+  }
+
+  .menu__trigger {
+    position: fixed;
+    z-index: 1000;
+    inset-block-end: max(var(--spacing-size-l), env(safe-area-inset-bottom));
+    inset-inline-end: var(--spacing-size-l);
+    /* Visibility waits for the fade when hiding, so the button stays focusable until it's gone. */
+    transition:
+      opacity var(--motion-transition) ease,
+      visibility 0s linear 0s;
+  }
+
+  .menu__trigger--hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity var(--motion-transition) ease,
+      visibility 0s linear var(--motion-transition);
+  }
+
+  @container (width <= 800px) {
+    .menu {
+      gap: var(--spacing-size-l);
+      background-color: var(--color-surface-overlay);
+      padding: var(--spacing-size-l);
+      inline-size: var(--menu-width);
+    }
+
+    :global(html:not(.js-enabled)) .menu:not(:target) {
+      display: none;
+    }
+
+    :global(html:not(.js-enabled)) .menu:target + .menu__trigger {
+      display: none;
+    }
+
+    :global(.js-enabled) .menu {
+      z-index: 1;
+      translate: -100% 0;
+      visibility: hidden;
+    }
+
+    :global(html[data-menu-open]) .menu {
+      translate: none;
+      visibility: visible;
+    }
+
+    :global(html[data-menu-open]) .menu__trigger {
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      :global(.js-enabled) .menu {
+        transition:
+          translate var(--motion-transition) ease,
+          visibility 0s linear var(--motion-transition);
+      }
+
+      :global(html[data-menu-open]) .menu {
+        transition:
+          translate var(--motion-transition) ease,
+          visibility 0s;
+      }
+    }
+  }
+
+  @container (width > 800px) {
+    .menu__items {
+      align-items: center;
+    }
+
+    .menu__trigger,
+    .menu__close {
+      display: none;
+    }
+  }
+</style>

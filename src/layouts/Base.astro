@@ -8,7 +8,6 @@ import Button from "~/components/Button.astro";
 import EnableJavascript from "~/components/EnableJavascript.astro";
 import Footer from "~/components/Footer.astro";
 import IconSprite from "~/components/IconSprite.astro";
-import LocaleSelector from "~/components/LocaleSelector.astro";
 import Logo from "~/components/Logo.astro";
 import Menu from "~/components/Menu.astro";
 import RememberLocale from "~/components/RememberLocale.astro";
@@ -47,7 +46,8 @@ const menuItems = await getMenuItems(toLocale(locale));
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    {/* minimum-scale stops mobile Chrome from zooming out to fit the open menu without JS. */}
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <link rel="preconnect" href={`https://${imgix_host}`} crossorigin />
     <Seo data={seoMetaTags} />
@@ -88,47 +88,41 @@ const menuItems = await getMenuItems(toLocale(locale));
     <Button as="a" class="kb-only skip-link" href="#navigation">
       {t("skip_to_navigation")}
     </Button>
-    {/* The single navigation landmark: the viewport-specific menus inside
-        (<MenuSidebar>/<MenuDrawer>) are plain wrappers, so there's one nav,
-        not nested duplicates. Also the skip-link target via id + tabindex. */}
-    <nav id="navigation" class="navigation" aria-label={t("main_navigation")} tabindex="-1">
+    <div class="page">
       <Menu
         items={menuItems}
         currentPageTitle={title}
         locale={locale}
         translations={translations}
       />
-      {translations.length > 0 && (
-        <div class="navigation__locale">
-          <LocaleSelector current={locale} translations={translations} />
-        </div>
-      )}
-    </nav>
-    <div class="content">
-      <Border class="content__border">
-        <Border class="header">
-          <header>
-            <a href="/">
-              <Logo />
-              <span class="sr-only">Luuk Brauckmann</span>
-            </a>
-          </header>
+      <div class="content">
+        {/* Sticky, so jumping here keeps the vertical scroll position. */}
+        <span id="page" class="page-anchor"></span>
+        <Border class="content__border">
+          <Border class="header">
+            <header>
+              <a href="/">
+                <Logo />
+                <span class="sr-only">Luuk Brauckmann</span>
+              </a>
+            </header>
+          </Border>
+
+          {
+            Astro.slots.has("back") && (
+              <div class="back">
+                <slot name="back" />
+              </div>
+            )
+          }
+
+          <main id="main">
+            <slot />
+          </main>
+
+          <Footer items={menuItems} />
         </Border>
-
-        {
-          Astro.slots.has("back") && (
-            <div class="back">
-              <slot name="back" />
-            </div>
-          )
-        }
-
-        <main id="main">
-          <slot />
-        </main>
-
-        <Footer items={menuItems} />
-      </Border>
+      </div>
     </div>
 
     <IconSprite />
@@ -145,6 +139,23 @@ const menuItems = await getMenuItems(toLocale(locale));
     @media (prefers-reduced-motion: no-preference) {
       scroll-behavior: smooth;
     }
+
+    /* Without JS the viewport scrolls onto the open menu; rtl keeps the page in view as it appears. */
+    @media (width <= 800px) {
+      &:not(.js-enabled) {
+        direction: rtl;
+        overflow-x: hidden;
+      }
+
+      &:not(.js-enabled):has(:global(#navigation:target)) {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+      }
+
+      &[data-menu-open] {
+        overflow-y: hidden;
+      }
+    }
   }
 
   .skip-link:focus {
@@ -153,12 +164,19 @@ const menuItems = await getMenuItems(toLocale(locale));
     inset-inline-start: 50%;
   }
 
-  body {
+  .page {
+    --menu-width: min(20rem, 80cqi);
+
+    display: grid;
+    direction: ltr;
     min-block-size: 100dvh;
     overflow-x: clip;
 
+    @container (width <= 800px) {
+      grid-template-columns: 100cqi;
+    }
+
     @container (width > 800px) {
-      display: grid;
       grid-template-columns: minmax(0, 200px) min(600px, 100%);
       grid-template-areas: "left center";
       justify-content: center;
@@ -167,6 +185,51 @@ const menuItems = await getMenuItems(toLocale(locale));
     @container (width > 1000px) {
       grid-template-columns: minmax(0, 200px) min(600px, 100%) minmax(0, 200px);
       grid-template-areas: "left center right";
+    }
+  }
+
+  @container (width > 800px) {
+    .page > :global(.menu) {
+      grid-area: left;
+    }
+
+    .content {
+      grid-area: center;
+    }
+  }
+
+  @container (width <= 800px) {
+    :global(html:not(.js-enabled)) .page {
+      inline-size: max-content;
+    }
+
+    :global(html:not(.js-enabled)):has(:global(#navigation:target)) .page {
+      grid-template-columns: var(--menu-width) 100cqi;
+    }
+
+    :global(html:not(.js-enabled)) .page > :global(.menu) {
+      scroll-snap-align: start;
+    }
+
+    :global(html:not(.js-enabled)) .content {
+      scroll-snap-align: end;
+    }
+
+    :global(.js-enabled) .page > :global(*) {
+      grid-area: 1 / 1;
+    }
+
+    :global(html[data-menu-open]) .content {
+      translate: var(--menu-width) 0;
+      opacity: 0.4;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      :global(.js-enabled) .content {
+        transition:
+          translate var(--motion-transition) ease,
+          opacity var(--motion-transition) ease;
+      }
     }
   }
 
@@ -200,7 +263,6 @@ const menuItems = await getMenuItems(toLocale(locale));
   }
 
   .content {
-    grid-area: center;
     container-type: inline-size;
 
     @container (width > 800px) {
@@ -230,32 +292,11 @@ const menuItems = await getMenuItems(toLocale(locale));
     text-shadow: 0 0 8px rgb(0 0 0 / 0.4);
   }
 
-  /* Mobile-first: the nav region has no in-flow content on narrow (sidebar
-     and standalone selector hidden, drawer trigger fixed), so its default
-     block box collapses to zero height — no gap, while staying a reliable
-     navigation landmark (unlike display:contents). The wide rule below gives
-     it the sticky sidebar layout. */
-
-  /* The standalone selector is a wide-viewport affordance only; on narrow it
-     lives inside the menu drawer (owned by <MenuDrawer>). */
-  .navigation__locale {
-    display: none;
-  }
-
-  :global(html[data-viewport="wide"]) .navigation__locale {
+  .page-anchor {
     display: block;
-  }
-
-  /* On wide the whole left column sticks for the full viewport height, so the
-     locale selector can pin to the bottom and stay in view while scrolling.
-     (Was on <MenuSidebar>, but the selector lives outside it.) */
-  :global(html[data-viewport="wide"]) .navigation {
-    display: flex;
     position: sticky;
-    flex-direction: column;
-    grid-area: left;
     inset-block-start: 0;
-    block-size: 100dvh;
+    block-size: 0;
   }
 
   /* In its own grid row so it reserves space (content sits below it, no
