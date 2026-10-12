@@ -1,6 +1,4 @@
 import type { Loader, LoaderContext } from "astro/loaders";
-import { DATOCMS_TOKEN } from "astro:env/server";
-import { subscribeToQuery, type UnsubscribeFn } from "datocms-listen";
 import { LoaderDocument, SiteLocale, type LoaderQuery } from "~/generated/datocms";
 import { z } from "astro/zod";
 import { executeQuery } from "./execute-query";
@@ -23,7 +21,7 @@ type EntryData = (
 export function loader() {
   return {
     name: "datocms-loader",
-    load: async ({ store, parseData, config, logger }) => {
+    load: async ({ store, parseData, config }) => {
       if (!config.i18n) return;
 
       const locales = Object.values(SiteLocale);
@@ -39,19 +37,6 @@ export function loader() {
       );
 
       await write(results, store, parseData);
-
-      if (import.meta.env.DEV) {
-        await listen(
-          locales,
-          fallbackLocales,
-          async (locale, result) => {
-            results.set(locale, result);
-            await write(results, store, parseData);
-            logger.info(`Updated from DatoCMS (${locale})`);
-          },
-          logger,
-        );
-      }
     },
     schema: z.custom<EntryData>(),
   } satisfies Loader;
@@ -145,36 +130,4 @@ async function write(
 
   store.clear();
   for (const entry of parsed) store.set(entry);
-}
-
-// Load reruns on content sync and dev restarts, so close the previous subscriptions first.
-let subscriptions: UnsubscribeFn[] = [];
-
-async function listen(
-  locales: SiteLocale[],
-  fallbackLocales: SiteLocale[],
-  onUpdate: (locale: SiteLocale, result: LoaderQuery) => Promise<void>,
-  logger: LoaderContext["logger"],
-) {
-  subscriptions.forEach((unsubscribe) => unsubscribe());
-
-  if (typeof EventSource === "undefined") {
-    logger.warn("Live DatoCMS updates need Node's --experimental-eventsource flag");
-    subscriptions = [];
-    return;
-  }
-
-  subscriptions = await Promise.all(
-    locales.map((locale) =>
-      subscribeToQuery({
-        query: LoaderDocument,
-        variables: { locale, fallbackLocales },
-        token: DATOCMS_TOKEN,
-        fetcher: fetch,
-        eventSourceClass: EventSource,
-        onUpdate: ({ response }) => void onUpdate(locale, response.data),
-        onChannelError: ({ message }) => logger.error(`DatoCMS live updates: ${message}`),
-      }),
-    ),
-  );
 }
