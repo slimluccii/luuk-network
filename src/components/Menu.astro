@@ -46,6 +46,8 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   const nav = document.getElementById("navigation")!;
   const trigger = document.querySelector<HTMLElement>(".menu__trigger")!;
 
+  let lockedScrollY = 0;
+
   const isOpen = () => "menuOpen" in root.dataset;
   // The trigger only shows in the narrow layout, the only one where the menu opens.
   const isNarrow = () => getComputedStyle(trigger).display !== "none";
@@ -59,6 +61,8 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   }
 
   function open() {
+    lockedScrollY = window.scrollY;
+    root.style.setProperty("--menu-scroll-y", `${lockedScrollY}px`);
     root.dataset.menuOpen = "";
     setOutsideInert(true);
     trigger.setAttribute("aria-expanded", "true");
@@ -67,6 +71,8 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
 
   function close() {
     delete root.dataset.menuOpen;
+    root.style.removeProperty("--menu-scroll-y");
+    window.scrollTo({ top: lockedScrollY, behavior: "instant" });
     setOutsideInert(false);
     trigger.setAttribute("aria-expanded", "false");
     trigger.focus({ preventScroll: true });

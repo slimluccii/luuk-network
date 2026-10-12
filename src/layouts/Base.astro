@@ -139,22 +139,25 @@ const menuItems = await getMenuItems(toLocale(locale));
     @media (prefers-reduced-motion: no-preference) {
       scroll-behavior: smooth;
     }
+  }
 
+  @media (width <= 800px) {
     /* Without JS the viewport scrolls onto the open menu; rtl keeps the page in view as it appears. */
-    @media (width <= 800px) {
-      &:not(.js-enabled) {
-        direction: rtl;
-        overflow-x: hidden;
-      }
+    :global(html:not(.js-enabled)) {
+      direction: rtl;
+      overflow-x: hidden;
+    }
 
-      &:not(.js-enabled):has(:global(#navigation:target)) {
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-      }
+    :global(html:not(.js-enabled):has(#navigation:target)) {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
 
-      &[data-menu-open] {
-        overflow-y: hidden;
-      }
+    /* Fixed rather than overflow: hidden on the root, which doesn't stop scrolling in iOS Safari. */
+    :global(html[data-menu-open] body) {
+      position: fixed;
+      inset-inline: 0;
+      inset-block-start: calc(-1 * var(--menu-scroll-y));
     }
   }
 
