@@ -5,22 +5,24 @@ import { Font } from "astro:assets";
 import { Seo } from "@datocms/astro";
 import Border from "~/components/Border.astro";
 import Button from "~/components/Button.astro";
-import EnableJavascript from "~/components/EnableJavascript.astro";
 import Footer from "~/components/Footer.astro";
 import IconSprite from "~/components/IconSprite.astro";
 import Logo from "~/components/Logo.astro";
 import Menu from "~/components/Menu.astro";
 import RememberLocale from "~/components/RememberLocale.astro";
-import SetColorScheme from "~/components/SetColorScheme.astro";
-import ViewportState from "~/components/ViewportState.astro";
 import { getMenuItems } from "~/datocms/menu";
 import { t, toLocale } from "~/i18n";
 import { imgix_host } from "~/generated/site.json";
+import { allowInlineScript } from "~/utils/allow-inline-script";
+import jsMarker from "./scripts/js-marker.js?raw";
 
 import "~/generated/tokens.css";
 import "~/styles/a11y.css";
 import "~/styles/reset.css";
 import "~/styles/typography.css";
+
+// Must run before the first await: on-demand pages send the CSP header as soon as rendering starts
+allowInlineScript(Astro, jsMarker);
 
 type Props = {
   locale?: string;
@@ -46,15 +48,13 @@ const menuItems = await getMenuItems(toLocale(locale));
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
+    <script is:inline set:html={jsMarker} />
     {/* minimum-scale stops mobile Chrome from zooming out to fit the open menu without JS. */}
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <link rel="preconnect" href={`https://${imgix_host}`} crossorigin />
     <Seo data={seoMetaTags} />
 
-    <EnableJavascript />
-    <ViewportState />
-    <SetColorScheme />
     {/* Error pages have no translations and render in the default locale, which must not overwrite the cookie. */}
     {translations.length > 0 && <RememberLocale />}
 

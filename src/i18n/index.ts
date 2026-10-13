@@ -6,7 +6,7 @@ export type TranslationKey = keyof (typeof translations)["en"];
 
 const DEFAULT_LOCALE: Locale = "en";
 
-export const LOCALE_COOKIE = "locale";
+export { LOCALE_COOKIE } from "./locale-cookie";
 
 const isLocale = (value: string): value is Locale => value in translations;
 

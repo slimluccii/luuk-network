@@ -97,8 +97,9 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
     if (event.key === "Escape" && isOpen()) close();
   });
 
-  document.addEventListener("viewportchange", () => {
-    if (root.dataset.viewport === "wide" && isOpen()) close();
+  const wide = matchMedia("(width > 800px)");
+  wide.addEventListener("change", () => {
+    if (wide.matches && isOpen()) close();
   });
 
   const footerNav = document.querySelector("[data-footer-nav]");
