@@ -9,7 +9,6 @@ import Footer from "~/components/Footer.astro";
 import IconSprite from "~/components/IconSprite.astro";
 import Logo from "~/components/Logo.astro";
 import Menu from "~/components/Menu.astro";
-import RememberLocale from "~/components/RememberLocale.astro";
 import { getMenuItems } from "~/datocms/menu";
 import { t, toLocale } from "~/i18n";
 import { imgix_host } from "~/generated/site.json";
@@ -56,7 +55,7 @@ const menuItems = await getMenuItems(toLocale(locale));
     <Seo data={seoMetaTags} />
 
     {/* Error pages have no translations and render in the default locale, which must not overwrite the cookie. */}
-    {translations.length > 0 && <RememberLocale />}
+    {translations.length > 0 && <script src="./scripts/remember-locale.ts"></script>}
 
     <Font cssVariable="--font-source-sans" preload={[{ style: "normal" }]} />
     <Font cssVariable="--font-dash-casual" preload />
