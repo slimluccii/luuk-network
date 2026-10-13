@@ -131,6 +131,7 @@ const token = await createFormToken(CONTACT_FORM_SECRET);
     const widget = new FriendlyCaptchaSDK().createWidget({
       element,
       sitekey: element.dataset.sitekey!,
+      theme: "dark",
     });
 
     element.addEventListener("frc:widget.complete", () => {
