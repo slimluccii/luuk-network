@@ -1,12 +1,13 @@
 ---
+import type { HTMLAttributes } from "astro/types";
 import { t } from "~/i18n";
 
-type Props = {
+type Props = HTMLAttributes<"ul"> & {
   current: string;
   translations: Array<{ locale: string; path: string }>;
 };
 
-const { current, translations } = Astro.props;
+const { current, translations, class: className, ...props } = Astro.props;
 const locales = [...translations].sort((a, b) =>
   a.locale.localeCompare(b.locale)
 );
@@ -16,52 +17,57 @@ const locales = [...translations].sort((a, b) =>
 const languageName = (locale: string) =>
   new Intl.DisplayNames([locale], { type: "language" }).of(locale) ??
   locale.toUpperCase();
-
-const selectId = "locale-selector";
 ---
 
-<locale-select class="locale-selector">
-  <label for={selectId} class="sr-only">{t("language")}</label>
-  <select id={selectId} autocomplete="off">
-    {
-      locales.map(({ locale, path }) => (
-        <option value={path} selected={locale === current} lang={locale}>
+<ul
+  class:list={["locale-selector", className]}
+  role="list"
+  aria-label={t("language")}
+  {...props}
+>
+  {
+    locales.map(({ locale, path }) => (
+      <li>
+        <a
+          class="locale-selector__link link-plain"
+          href={path}
+          hreflang={locale}
+          lang={locale}
+          aria-current={locale === current ? "page" : undefined}
+        >
           {languageName(locale)}
-        </option>
-      ))
-    }
-  </select>
-</locale-select>
-
-<script>
-  class LocaleSelect extends HTMLElement {
-    connectedCallback() {
-      const select = this.querySelector("select");
-      select?.addEventListener("change", () => {
-        const path = select.value;
-        if (path && path !== location.pathname) location.href = path;
-      });
-    }
+        </a>
+      </li>
+    ))
   }
-
-  if (!customElements.get("locale-select")) {
-    customElements.define("locale-select", LocaleSelect);
-  }
-</script>
+</ul>
 
 <style>
-  .locale-selector select {
-    display: block;
-    cursor: pointer;
+  .locale-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-size-s);
     margin: 0;
-    border: 1px solid transparent;
-    background-color: transparent;
-    padding: var(--spacing-size-xs);
-    inline-size: 100%;
+    padding: 0;
+    padding-block: var(--spacing-size-xs);
+    list-style: none;
   }
 
-  .locale-selector:hover select {
-    border-color: var(--color-brand-neutral);
-    background-color: var(--color-brand-neutral);
+  .locale-selector__link {
+    display: block;
+    opacity: var(--opacity-muted);
+    transition: var(--motion-feedback) ease;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+
+    &:hover {
+      opacity: 1;
+      text-decoration-color: currentColor;
+    }
+
+    &[aria-current="page"] {
+      opacity: 1;
+      font-weight: 500;
+    }
   }
 </style>
