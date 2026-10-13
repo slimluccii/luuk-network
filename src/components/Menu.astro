@@ -1,6 +1,7 @@
 ---
 import Button from "~/components/Button.astro";
 import LocaleSelector from "~/components/LocaleSelector.astro";
+import Logo from "~/components/Logo.astro";
 import NavList from "~/components/NavList.astro";
 import type { MenuItem } from "~/datocms/menu";
 import { t } from "~/i18n";
@@ -22,6 +23,7 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   aria-label={t("main_navigation")}
   tabindex="-1"
 >
+  <Logo class="menu__logo" aria-hidden="true" />
   <div class="menu__items">
     <NavList items={items} currentPageTitle={currentPageTitle} showSubList />
   </div>
@@ -173,6 +175,10 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
       inline-size: var(--menu-width);
     }
 
+    .menu__logo {
+      align-self: start;
+    }
+
     /* Leaves room beside it for the close button. */
     .menu > :global(.locale-selector) {
       align-self: start;
@@ -227,6 +233,10 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   @container (width > 800px) {
     .menu {
       padding-inline-start: var(--spacing-size-xs);
+    }
+
+    .menu__logo {
+      display: none;
     }
 
     .menu__items {
