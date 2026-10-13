@@ -225,6 +225,10 @@ const { items, currentPageTitle, locale, translations } = Astro.props;
   }
 
   @container (width > 800px) {
+    .menu {
+      padding-inline-start: var(--spacing-size-xs);
+    }
+
     .menu__items {
       align-items: center;
     }
