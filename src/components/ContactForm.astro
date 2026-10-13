@@ -158,15 +158,28 @@ const token = await createFormToken(CONTACT_FORM_SECRET);
   .contact-form__field {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-size-xxs);
+    gap: var(--spacing-size-s);
     inline-size: 100%;
     max-inline-size: 40rem;
 
+    & label {
+      font-weight: 700;
+      font-size: var(--typography-scale-caption);
+      line-height: 1.5;
+    }
+
     & input,
     & textarea {
-      padding: var(--spacing-size-xs);
-      border: 1px solid var(--color-brand-neutral);
-      background-color: var(--color-surface-raised);
+      padding: var(--spacing-size-s) var(--spacing-size-m);
+      border: 1px solid var(--color-surface-raised);
+      background-color: transparent;
+      color: inherit;
+      font-weight: 500;
+      line-height: 1.5;
+
+      &:hover {
+        border-color: var(--color-brand-primary);
+      }
     }
 
     & textarea {
@@ -182,6 +195,9 @@ const token = await createFormToken(CONTACT_FORM_SECRET);
     display: none;
     margin: 0;
     color: var(--color-intent-critical);
+    font-weight: 500;
+    font-size: var(--typography-scale-caption);
+    line-height: 1.5;
 
     :is(:user-invalid, [aria-invalid="true"]) + &,
     [data-invalid] > & {
