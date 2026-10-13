@@ -27,3 +27,17 @@ const { blocks } = Astro.props;
     })
   }
 </div>
+
+<style>
+  .blocks__item:has(> :global(.title-block)) {
+    border-block-end-color: transparent;
+
+    &:has(+ .blocks__item) > :global(.title-block) {
+      padding-block-end: 0;
+    }
+
+    & + .blocks__item {
+      border-block-start-color: transparent;
+    }
+  }
+</style>
