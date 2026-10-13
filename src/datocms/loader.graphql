@@ -32,6 +32,7 @@ query Loader($locale: SiteLocale, $fallbackLocales: [SiteLocale!]) {
       ...FeaturedBlock
       ...StoryBlock
       ...CtaBlock
+      ...ContactFormBlock
     }
   }
   allPosts(locale: $locale, fallbackLocales: $fallbackLocales, first: 100) {

@@ -1,0 +1,4 @@
+fragment ContactFormBlock on ContactFormBlockRecord {
+  title
+  text
+}

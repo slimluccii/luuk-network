@@ -1,0 +1,36 @@
+---
+import type { ContactFormBlockFragment } from "~/generated/datocms";
+import ContactForm from "~/components/ContactForm.astro";
+
+type Props = {
+  block: ContactFormBlockFragment;
+};
+
+const { block } = Astro.props;
+const titleId = `contact-form-${crypto.randomUUID()}`;
+---
+
+<section class="contact-form-block" aria-labelledby={titleId}>
+  <h2 class="contact-form-block__title" id={titleId}>{block.title}</h2>
+  {block.text && <p class="contact-form-block__text">{block.text}</p>}
+  <ContactForm class="contact-form-block__form" />
+</section>
+
+<style>
+  .contact-form-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-size-s);
+    background-color: var(--color-surface-base);
+    padding: var(--spacing-size-xl) var(--spacing-size-l);
+  }
+
+  .contact-form-block__title,
+  .contact-form-block__text {
+    margin: 0;
+  }
+
+  .contact-form-block__form {
+    margin-block-start: var(--spacing-size-xs);
+  }
+</style>
