@@ -3,6 +3,6 @@
 import { LOCALE_COOKIE } from "~/i18n";
 ---
 
-<script is:inline define:vars={{ cookieName: LOCALE_COOKIE }}>
-  document.cookie = `${cookieName}=${document.documentElement.lang}; path=/; max-age=31536000; samesite=lax`;
+<script is:inline data-cookie={LOCALE_COOKIE}>
+  document.cookie = `${document.currentScript.dataset.cookie}=${document.documentElement.lang}; path=/; max-age=31536000; samesite=lax`;
 </script>
