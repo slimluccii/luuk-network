@@ -1,7 +1,8 @@
 ---
 import type { CtaBlockFragment } from "~/generated/datocms";
 import Button from "~/components/Button.astro";
-import { email } from "~/data/contact";
+import { getContactFormPath } from "~/datocms/entries";
+import { getLocale } from "~/i18n";
 
 type Props = {
   block: CtaBlockFragment;
@@ -9,14 +10,19 @@ type Props = {
 
 const { block } = Astro.props;
 const titleId = `cta-${crypto.randomUUID()}`;
+const contactPath = await getContactFormPath(getLocale());
 ---
 
 <section class="cta" aria-labelledby={titleId}>
   <h2 class="cta__title" id={titleId}>{block.title}</h2>
   {block.text && <p class="cta__text">{block.text}</p>}
-  <Button as="a" class="cta__button" icon="envelope" href={`mailto:${email}`}>
-    {block.label}
-  </Button>
+  {
+    contactPath && (
+      <Button as="a" class="cta__button" icon="envelope" href={contactPath}>
+        {block.label}
+      </Button>
+    )
+  }
 </section>
 
 <style>

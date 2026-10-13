@@ -12,3 +12,15 @@ export async function getOnDemandEntry(url: URL) {
   );
   return entry;
 }
+
+export async function getContactFormPath(locale: string) {
+  const [entry] = await getCollection(
+    "pages",
+    (entry) =>
+      entry.data.locale === locale &&
+      "content" in entry.data &&
+      Array.isArray(entry.data.content) &&
+      entry.data.content.some((block) => block.__typename === "ContactFormBlockRecord"),
+  );
+  return entry?.data.path;
+}

@@ -2,14 +2,18 @@
 import type { HTMLAttributes } from "astro/types";
 import SplitButton from "~/components/SplitButton.astro";
 import Icon from "~/components/Icon.astro";
-import { email, socialLinks } from "~/data/contact";
-import { t } from "~/i18n";
+import { socialLinks } from "~/data/contact";
+import { getContactFormPath } from "~/datocms/entries";
+import { getLocale, t } from "~/i18n";
 
 type Props = HTMLAttributes<"a">;
 
 const github = socialLinks.find((link) => link.icon === "github")!;
+const contactPath = await getContactFormPath(getLocale());
 const links = [
-  { href: `mailto:${email}`, icon: "envelope" as const, title: t("email"), external: false },
+  ...(contactPath
+    ? [{ href: contactPath, icon: "envelope" as const, title: t("contact"), external: false }]
+    : []),
   ...socialLinks
     .filter((link) => link !== github)
     .map((link) => ({ ...link, external: true })),
