@@ -21,11 +21,8 @@ const { blocks } = Astro.props;
           </Border>
         );
       } catch (error) {
-        return (
-          <script is:inline>
-            console.error(`Error loading block ${blockName}: ${error}`);
-          </script>
-        );
+        console.error(`Error loading block ${blockName}`, error);
+        return null;
       }
     })
   }
