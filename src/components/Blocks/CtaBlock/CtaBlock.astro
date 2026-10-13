@@ -1,6 +1,11 @@
 ---
 import type { CtaBlockFragment } from "~/generated/datocms";
 import Button from "~/components/Button.astro";
+import Section from "~/components/Section.astro";
+import SectionActions from "~/components/SectionActions.astro";
+import SectionContent from "~/components/SectionContent.astro";
+import SectionHeader from "~/components/SectionHeader.astro";
+import SectionTitle from "~/components/SectionTitle.astro";
 import { getContactFormPath } from "~/datocms/entries";
 import { getLocale } from "~/i18n";
 
@@ -13,34 +18,34 @@ const titleId = `cta-${crypto.randomUUID()}`;
 const contactPath = await getContactFormPath(getLocale());
 ---
 
-<section class="cta" aria-labelledby={titleId}>
-  <h2 class="cta__title" id={titleId}>{block.title}</h2>
-  {block.text && <p class="cta__text">{block.text}</p>}
+<Section class="cta" aria-labelledby={titleId}>
+  <SectionHeader>
+    <SectionTitle id={titleId}>{block.title}</SectionTitle>
+  </SectionHeader>
   {
-    contactPath && (
-      <Button as="a" class="cta__button" icon="envelope" href={contactPath}>
-        {block.label}
-      </Button>
+    block.text && (
+      <SectionContent>
+        <p class="cta__text">{block.text}</p>
+      </SectionContent>
     )
   }
-</section>
+  {
+    contactPath && (
+      <SectionActions>
+        <Button as="a" icon="envelope" href={contactPath}>
+          {block.label}
+        </Button>
+      </SectionActions>
+    )
+  }
+</Section>
 
 <style>
   .cta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-size-s);
     background-color: var(--color-surface-base);
-    padding: var(--spacing-size-xl) var(--spacing-size-l);
   }
 
-  .cta__title,
   .cta__text {
     margin: 0;
-  }
-
-  .cta__button {
-    margin-block-start: var(--spacing-size-xs);
   }
 </style>
