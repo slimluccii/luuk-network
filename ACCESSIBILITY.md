@@ -1,6 +1,6 @@
 # Accessibility
 
-I want everyone to be able to read and use luuk.network, whatever device,
+I want everyone to be able to read and use luuk.dk, whatever device,
 browser, input method or assistive technology they use. Building accessible
 websites is my work, and my own site should reflect that.
 
@@ -36,7 +36,7 @@ support them.
 ## Reporting a barrier
 
 If something on the site gets in your way, I want to know. Please
-[open an issue](https://github.com/slimluccii/luuk.network/issues/new/choose)
+[open an issue](https://github.com/slimluccii/luuk.dk/issues/new/choose)
 with the accessibility template. It helps to know:
 
 - the page, and what you were trying to do

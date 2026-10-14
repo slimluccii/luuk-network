@@ -18,7 +18,7 @@ const { fonts } = await import("./config/fonts");
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://luuk.network",
+  site: "https://luuk.dk",
   adapter: deploybase(),
   integrations: [
     codegen(codegenConfig),

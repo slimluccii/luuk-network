@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-This repository is the source of [luuk.network](https://luuk.network). There
+This repository is the source of [luuk.dk](https://luuk.dk). There
 are no released versions. Only the live site and the `main` branch receive
 security fixes.
 

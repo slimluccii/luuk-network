@@ -1,6 +1,6 @@
-# luuk.network
+# luuk.dk
 
-Personal website for [luuk.network](https://luuk.network), built as a static
+Personal website for [luuk.dk](https://luuk.dk), built as a static
 site with [Astro](https://astro.build). All content, including translations and
 icons, comes from [DatoCMS](https://www.datocms.com).
 

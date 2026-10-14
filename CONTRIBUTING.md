@@ -9,7 +9,7 @@ don't have the time to review outside changes.
 
 What helps is a report when something is broken:
 
-- [Open an issue](https://github.com/slimluccii/luuk.network/issues/new/choose)
+- [Open an issue](https://github.com/slimluccii/luuk.dk/issues/new/choose)
   for a bug, a broken link or a mistake in the content.
 - Use the accessibility template when something on the site is hard or
   impossible to use. See the [accessibility statement](ACCESSIBILITY.md).

@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://luuk.network/sitemap-index.xml
+Sitemap: https://luuk.dk/sitemap-index.xml
